@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <link rel="canonical" href="https://granty.site/">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-66K2V5L7LP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-66K2V5L7LP');
+  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3330421188865475" crossorigin="anonymous"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>公募情報データベース Granty｜研究助成金・奨学金・顕彰の公募情報を一元検索</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Granty（グランティ）は、研究者・大学院生・NPO向けに、締切3ヶ月以内の研究助成金・奨学金・顕彰・学術交流事業の公募情報を一元化した無料データベースです。タグ・キーワード・金額で絞り込んで、今すぐ応募できる助成金を探せます。">
+  <meta name="keywords" content="研究助成金,奨学金,顕彰,公募情報,研究資金,民間財団,科研費以外,若手研究者,NPO,助成金データベース">
+  <meta name="author" content="Granty (@Grantydb)">
+
+  <!-- OGP（SNSシェア用） -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="公募情報データベース Granty">
+  <meta property="og:title" content="公募情報データベース Granty｜研究助成金・奨学金の公募情報を一元検索">
+  <meta property="og:description" content="締切3ヶ月以内の研究助成金・奨学金・顕彰情報を無料で検索。タグ・キーワード・金額で絞り込めます。研究者・大学院生・NPO向け。">
+  <meta property="og:url" content="https://granty.site/">
+  <meta property="og:locale" content="ja_JP">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@Grantydb">
+  <meta name="twitter:title" content="公募情報データベース Granty｜研究助成金・奨学金の公募情報を一元検索">
+  <meta name="twitter:description" content="締切3ヶ月以内の研究助成金・奨学金・顕彰情報を無料で検索。タグ・キーワード・金額で絞り込めます。研究者・大学院生・NPO向け。">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
+    
+  <style>
+    :root {
+        --primary-color: #2c5f88;
+        --primary-light: #eef5f9;
+        --accent-color: #d4a017;
+        --text-color: #333333;
+        --bg-color: #f4f7f6;
+        --h1-height: 60px;
+        --toolbar-height: 52px;      /* 件数・検索バー行の高さ */
+        --thead-col-height: 42px;    /* 列名行の高さ */
+        --thead-search-height: 42px; /* 列検索窓行の高さ */
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    
+    body { 
+        font-family: "Noto Sans JP", sans-serif; 
+        padding: 20px; 
+        background-color: var(--bg-color); 
+        margin: 0; 
+        color: var(--text-color);
+        line-height: 1.6;
+    }
+
+    .container { 
+      max-width: 1280px;
+      width: 95%;
+      margin: 0 auto; 
+      background: white; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06); 
+      min-height: 800px;
+    }
+
+    /* --- 固定ヘッダー設定 --- */
+    .sticky-header {
+        position: sticky; top: 0; z-index: 1000;
+        height: var(--h1-height);
+        background-color: rgba(255, 255, 255, 0.98);
+        border-bottom: 1px solid #ddd;
+        border-top-left-radius: 12px; border-top-right-radius: 12px;
+        display: flex; justify-content: space-between; align-items: center; 
+        padding: 0 30px;
+    }
+
+    /* --- DataTablesツールバー（件数・検索バー）を固定 --- */
+    div.dt-container .dt-layout-row:first-child {
+        position: sticky !important;
+        top: var(--h1-height) !important;
+        z-index: 900 !important;
+        background-color: rgba(255, 255, 255, 0.98) !important;
+        border-bottom: 1px solid #e0e0e0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        padding: 8px 20px !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        flex-wrap: wrap;
+        gap: 6px;
+        height: var(--toolbar-height);
+    }
+
+    /* ======================================================
+       列名ヘッダー行（1行目）
+       サイトタイトル + ツールバーの真下に固定
+    ====================================================== */
+    table.dataTable thead tr:first-child th {
+        position: sticky !important;
+        top: calc(var(--h1-height) + var(--toolbar-height)) !important;
+        z-index: 800 !important;
+        background-color: var(--primary-color) !important;
+        color: white !important;
+        padding: 10px 15px !important;
+        white-space: nowrap;
+        border-bottom: none !important;
+        box-shadow: none;
+        text-align: left !important;
+        cursor: default !important;
+        height: var(--thead-col-height);
+    }
+    table.dataTable thead tr:first-child th:hover {
+        background-color: var(--primary-color) !important; 
+        outline: none !important;
+    }
+
+    /* ======================================================
+       列検索窓ヘッダー行（2行目）
+       サイトタイトル + ツールバー + 列名行の真下に固定
+    ====================================================== */
+    table.dataTable thead tr:last-child th {
+        position: sticky !important;
+        top: calc(var(--h1-height) + var(--toolbar-height) + var(--thead-col-height)) !important;
+        z-index: 799 !important;
+        background-color: #1e4a6e !important;
+        padding: 5px 8px !important;
+        border-bottom: 2px solid #0f2f47 !important;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        height: var(--thead-search-height);
+    }
+
+    /* 検索入力欄のスタイル */
+    table.dataTable thead tr:last-child th input.col-search {
+        width: 100%;
+        padding: 4px 8px;
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: "Noto Sans JP", sans-serif;
+        background-color: rgba(255,255,255,0.15);
+        color: white;
+        outline: none;
+        transition: background-color 0.2s, border-color 0.2s;
+        box-sizing: border-box;
+    }
+    table.dataTable thead tr:last-child th input.col-search::placeholder {
+        color: rgba(255,255,255,0.55);
+        font-size: 11px;
+    }
+    table.dataTable thead tr:last-child th input.col-search:focus {
+        background-color: rgba(255,255,255,0.3);
+        border-color: rgba(255,255,255,0.7);
+    }
+    /* 値が入力されているときは背景を黄色系に変えて視覚的にわかりやすく */
+    table.dataTable thead tr:last-child th input.col-search.active {
+        background-color: rgba(212,160,23,0.7);
+        border-color: var(--accent-color);
+        color: white;
+    }
+    table.dataTable thead tr:last-child th input.col-search.active::placeholder {
+        color: rgba(255,255,255,0.7);
+    }
+
+    /* 検索クリアボタン（✕）*/
+    table.dataTable thead tr:last-child th .col-search-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    table.dataTable thead tr:last-child th .col-search-clear {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: rgba(255,255,255,0.7);
+        font-size: 10px;
+        display: none;
+        line-height: 1;
+        padding: 2px;
+    }
+    table.dataTable thead tr:last-child th .col-search-clear:hover {
+        color: white;
+    }
+    table.dataTable thead tr:last-child th input.col-search.active ~ .col-search-clear {
+        display: block;
+    }
+
+    /* --- テーブル基本設定 --- */
+    table.dataTable { width: 100% !important; margin-top: 0 !important; border-collapse: separate; border-spacing: 0; }
+    table.dataTable tbody td { padding: 12px 15px; border-bottom: 1px solid #eee; font-size: 14px; color: #444; vertical-align: middle; }
+    table.dataTable tbody tr:hover { background-color: #fff8e1 !important; }
+
+    /* --- 列幅設定 --- */
+    .col-fav      { width: 42px !important; text-align: center !important; padding: 0 !important; }
+    .col-viewed   { width: 42px !important; text-align: center !important; padding: 0 !important; }
+    .col-org    { width: 20%; }
+    .col-grant  { width: auto; }
+    .col-deadline { width: 110px !important; text-align: left !important; }
+    .col-amount   { width: 90px !important; text-align: right !important; font-size: 13px; }
+    .col-update   { width: 90px !important; text-align: left !important; font-size: 13px; color: #666; }
+    .col-tags     { width: 180px !important; }
+
+    /* --- 金額スライダー --- */
+    .amount-slider-wrap {
+        padding: 4px 8px 2px;
+        min-width: 120px;
+    }
+    .amount-slider-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 4px;
+        white-space: nowrap;
+    }
+    .amount-slider-labels span.active-label {
+        color: var(--accent-color);
+        font-weight: bold;
+    }
+    #amountSlider {
+        margin: 4px 4px 6px;
+    }
+    /* noUiSliderのカラーをサイトカラーに合わせる */
+    #amountSlider .noUi-connect {
+        background: var(--accent-color);
+    }
+    #amountSlider .noUi-handle {
+        background: white;
+        border: 2px solid var(--accent-color);
+        border-radius: 50%;
+        box-shadow: none;
+        width: 14px !important;
+        height: 14px !important;
+        top: -5px !important;
+        right: -7px !important;
+        cursor: pointer;
+    }
+    #amountSlider .noUi-handle::before,
+    #amountSlider .noUi-handle::after { display: none; }
+    #amountSlider .noUi-target {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        box-shadow: none;
+        height: 4px;
+    }
+    .amount-include-unknown {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: rgba(255,255,255,0.7);
+        margin-top: 2px;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .amount-include-unknown input { cursor: pointer; accent-color: var(--accent-color); }
+    /* スライダーがアクティブ（絞込中）のときにヘッダーセルをハイライト */
+    th.amount-active { background-color: rgba(212,160,23,0.2) !important; }
+
+    /* --- 閲覧済み✓ボタン --- */
+    .viewed-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 15px;
+        line-height: 1;
+        padding: 4px;
+        color: #ccc;
+        transition: color 0.15s, transform 0.15s;
+        display: block;
+        margin: 0 auto;
+    }
+    .viewed-btn:hover { color: #5a9e6f; transform: scale(1.2); }
+    .viewed-btn.active { color: #5a9e6f; }
+
+    /* 閲覧済み行のスタイル */
+    table.dataTable tbody tr.viewed-row td {
+        color: #aaa !important;
+    }
+    table.dataTable tbody tr.viewed-row td a.grant-link {
+        color: #aaa !important;
+    }
+    table.dataTable tbody tr.viewed-row:hover td {
+        color: #888 !important;
+    }
+
+    /* --- お気に入り★ボタン --- */
+    .fav-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+        padding: 4px;
+        color: #ccc;
+        transition: color 0.15s, transform 0.15s;
+        display: block;
+        margin: 0 auto;
+    }
+    .fav-btn:hover { color: var(--accent-color); transform: scale(1.2); }
+    .fav-btn.active { color: var(--accent-color); }
+
+    /* ✓列の検索窓行トグルボタン */
+    #viewedFilterToggle {
+        background: none;
+        border: 1.5px solid rgba(255,255,255,0.4);
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 1;
+        padding: 3px 6px;
+        color: rgba(255,255,255,0.6);
+        transition: color 0.15s, background 0.15s, border-color 0.15s;
+        display: block;
+        margin: 0 auto;
+        width: 100%;
+    }
+    #viewedFilterToggle:hover {
+        color: #5a9e6f;
+        border-color: #5a9e6f;
+        background: rgba(90,158,111,0.15);
+    }
+    #viewedFilterToggle.active {
+        color: #5a9e6f;
+        border-color: #5a9e6f;
+        background: rgba(90,158,111,0.25);
+    }
+    /* ★列の検索窓行トグルボタン */
+    #favFilterToggle {
+        background: none;
+        border: 1.5px solid rgba(255,255,255,0.4);
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+        padding: 3px 6px;
+        color: rgba(255,255,255,0.6);
+        transition: color 0.15s, background 0.15s, border-color 0.15s;
+        display: block;
+        margin: 0 auto;
+        width: 100%;
+    }
+    #favFilterToggle:hover {
+        color: var(--accent-color);
+        border-color: var(--accent-color);
+        background: rgba(212,160,23,0.15);
+    }
+    #favFilterToggle.active {
+        color: var(--accent-color);
+        border-color: var(--accent-color);
+        background: rgba(212,160,23,0.25);
+    }
+
+    /* お気に入りのみ表示ボタン */
+    #showFavOnly {
+        margin-left: 10px;
+        background: white;
+        color: var(--accent-color);
+        border: 1.5px solid var(--accent-color);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-family: "Noto Sans JP", sans-serif;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    /* --- 更新日フィルター（ドロップダウン） --- */
+    .update-filter-wrap {
+        position: relative;
+        width: 100%;
+    }
+    .update-filter-btn {
+        width: 100%;
+        padding: 4px 22px 4px 8px;
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 4px;
+        font-size: 11px;
+        font-family: "Noto Sans JP", sans-serif;
+        background-color: rgba(255,255,255,0.15);
+        color: rgba(255,255,255,0.8);
+        cursor: pointer;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+    .update-filter-btn::after {
+        content: "▾";
+        position: absolute;
+        right: 7px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 10px;
+        color: rgba(255,255,255,0.6);
+        pointer-events: none;
+    }
+    .update-filter-btn:hover {
+        border-color: rgba(255,255,255,0.7);
+        background-color: rgba(255,255,255,0.25);
+    }
+    .update-filter-btn.active {
+        background-color: rgba(212,160,23,0.7);
+        border-color: var(--accent-color);
+        color: white;
+    }
+    .update-filter-dropdown {
+        display: none;
+        position: absolute;
+        top: calc(100% + 4px);
+        right: 0;
+        min-width: 160px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        z-index: 2000;
+        padding: 6px 0;
+        max-height: 260px;
+        overflow-y: auto;
+    }
+    .update-filter-dropdown.open { display: block; }
+    .update-filter-controls {
+        display: flex;
+        gap: 8px;
+        padding: 4px 10px 8px;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 4px;
+    }
+    .update-filter-controls button {
+        border: none;
+        background: none;
+        color: var(--primary-color);
+        font-size: 12px;
+        cursor: pointer;
+        padding: 0;
+        font-family: "Noto Sans JP", sans-serif;
+    }
+    .update-filter-controls button:hover { text-decoration: underline; }
+    .update-filter-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 12px;
+        font-size: 13px;
+        color: #333;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .update-filter-item:hover { background: #f5f5f5; }
+    .update-filter-item input { cursor: pointer; accent-color: var(--primary-color); }
+    #showFavOnly:hover,
+    #showFavOnly.active {
+        background: var(--accent-color);
+        color: white;
+    }
+    #favCount {
+        display: inline-block;
+        background: var(--accent-color);
+        color: white;
+        border-radius: 10px;
+        font-size: 11px;
+        padding: 0 6px;
+        margin-left: 3px;
+        min-width: 18px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* --- その他デザイン --- */
+    .desc-wrapper { padding: 20px 30px; }
+    .site-desc { 
+        font-size: 14px; color: #555; background-color: var(--primary-light);
+        padding: 15px 20px; border-radius: 8px; border-left: 5px solid var(--primary-color);
+    }
+    h1 { margin: 0; font-size: 22px; color: var(--primary-color); font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    h1 i { color: var(--accent-color); }
+    
+    .tag-badge {
+        display: inline-block; font-size: 11px; padding: 2px 8px; margin: 2px;
+        border-radius: 4px; 
+        background: white; color: var(--primary-color);
+        border: 1px solid var(--primary-color); cursor: pointer; transition: 0.2s;
+    }
+    .tag-badge:hover { background: var(--primary-color); color: white; }
+
+    .grant-link { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+    .grant-link:hover { text-decoration: underline; color: var(--accent-color); }
+
+    #status { font-size: 13px; font-weight: bold; color: var(--primary-color); background: #eef5f9; padding: 5px 15px; border-radius: 20px; }
+    .dt-search input { border-radius: 20px; padding: 5px 12px; border: 1px solid #ccc; font-size: 13px; outline: none; }
+
+    /* 全列クリアボタン */
+    #clearAllFilters {
+        display: none;
+        margin-left: 10px;
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-family: "Noto Sans JP", sans-serif;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    #clearAllFilters:hover { background: #b8890f; }
+    
+    footer { padding: 30px; text-align: center; color: #888; font-size: 12px; border-top: 1px solid #eee; margin-top: 40px; }
+    footer a { color: #666; text-decoration: none; margin: 0 10px; }
+    footer a:hover { color: var(--primary-color); text-decoration: underline; }
+    .scroll-top-btn {
+        background-color: var(--primary-color); color: white; border: none; padding: 8px 15px;
+        border-radius: 30px; cursor: pointer; font-size: 12px; margin-right: 15px;
+    }
+
+    /* --- コラム一覧の整理（カード型グリッド） --- */
+    .column-section {
+        margin-top: 25px;
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .column-section h3 {
+        margin-top: 0;
+        color: var(--primary-color);
+        font-size: 16px;
+        border-bottom: 2px solid var(--primary-light);
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .column-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 12px;
+    }
+    .column-card {
+        background: #fafafa;
+        border: 1px solid #eee;
+        border-radius: 6px;
+        padding: 12px 15px;
+        font-size: 13px;
+        line-height: 1.5;
+        transition: 0.2s;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .column-card:hover {
+        background: var(--primary-light);
+        border-color: #b0c4de;
+    }
+    .column-card a {
+        color: #333;
+        text-decoration: none;
+        flex-grow: 1;
+    }
+    .column-card a:hover {
+        color: var(--primary-color);
+    }
+    .column-card i {
+        color: var(--primary-color);
+        margin-top: 3px;
+        font-size: 14px;
+    }
+    .new-badge {
+        background: #ff5252;
+        color: white;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-weight: bold;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+
+    /* --- トップページ説明文用のデザイン --- */
+    .about-granty-section {
+        padding: 40px 30px;
+        margin-top: 40px;
+        border-top: 2px dashed #ddd;
+        color: #444;
+    }
+    .about-granty-section h2 {
+        color: var(--primary-color); font-size: 22px; margin-bottom: 20px;
+        border-bottom: 2px solid var(--primary-color); padding-bottom: 8px;
+    }
+    .about-granty-section h3 {
+        color: var(--primary-color); font-size: 17px; margin-top: 30px; margin-bottom: 12px;
+        border-left: 4px solid var(--accent-color); padding-left: 12px;
+    }
+    .about-granty-section p, .about-granty-section ul { font-size: 14px; line-height: 1.8; margin-bottom: 15px; }
+    .about-granty-section ul { padding-left: 20px; }
+    .about-granty-section li { margin-bottom: 8px; }
+
+    /* --- レスポンシブ（スマホ用） --- */
+    @media (max-width: 768px) {
+        .table-wrapper { padding: 0 15px; }
+        .desc-wrapper { padding: 15px; }
+        
+        .sticky-header { position: static !important; padding: 15px; height: auto; flex-direction: column; gap: 10px; align-items: flex-start; }
+        div.dt-container .dt-layout-row:first-child { position: static !important; }
+        .about-granty-section { padding: 30px 15px; }
+        .column-grid { grid-template-columns: 1fr; }
+
+        table.dataTable {
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap; 
+        }
+        table.dataTable thead tr:first-child th,
+        table.dataTable thead tr:last-child th {
+            position: static !important;
+        }
+    }
+  </style> 
+</head>
+<body>
+
+  <div class="container">
+    <div class="sticky-header">
+        <h1><i class="fa-solid fa-graduation-cap"></i>公募情報データベース Granty</h1>
+        <div id="status"><i class="fa-solid fa-spinner fa-spin"></i> 読込中...</div>
+    </div>
+
+    <div class="desc-wrapper">
+        <div class="site-desc">
+            <p>
+                <strong>Granty（グランティ）</strong>は、研究者・学生・NPO向けに、〆切がおよそ3ヶ月先までの公募中の<br>
+                <span style="color:var(--primary-color); font-weight:bold;">研究助成金・奨学金・顕彰・学術交流事業</span> を集約したデータベースです。
+            </p>
+            <p style="font-size:12px; color:#666; margin-top:8px;">
+                <i class="fa-solid fa-circle-info"></i> 各機関の情報を一元化し、締切日や分野タグで手軽に検索・比較できます。<strong>（スマホの場合は表を横にスクロールしてご覧ください）</strong>
+            </p>
+            
+            <p style="margin-top: 10px; font-size: 13px;">
+                <a href="howto.html" style="color: var(--primary-color); text-decoration: underline; font-weight: bold;">
+                    <i class="fa-solid fa-book-open"></i> Grantyの詳しい活用方法・検索のコツはこちら
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <div style="padding: 0 30px;" class="table-wrapper">
+        <table id="myTable" class="display" style="width:100%">
+          <thead id="tableHeadArea"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="about-granty-section">
+        <h2>公募情報データベース「Granty」とは？</h2>
+        <p>
+            Granty（グランティ）は、研究者、大学院生、大学のURA（リサーチ・アドミニストレーター）、そしてNPO法人の皆様に向けて、<strong>全国の民間財団や公的機関が募集している「研究助成金・奨学金・顕彰」の公募情報を一元化した無料のデータベース</strong>です。
+        </p>
+
+        <h3>なぜGrantyを作ったのか（解決したい課題）</h3>
+        <p>
+            日本の研究現場では、「研究資金の獲得」がこれまで以上に大きな課題となっています。科研費（科学研究費助成事業）への競争が激化する中、多くの研究者が「民間財団の助成金」に活路を見出そうとしています。<br>
+            しかし、民間財団の公募情報は各財団のホームページに散在しており、フォーマットもバラバラです。<strong>「自分の研究分野に合った助成金を探すだけで、膨大な時間が奪われてしまう」「締め切りを過ぎてから、その公募の存在を知った」</strong>という研究者の切実な悩みを解決するため、このGrantyは誕生しました。
+        </p>
+
+        <h3>Grantyの3つの特徴</h3>
+        <ul>
+            <li><strong>直感的な絞り込み検索：</strong> 分野（医療、理工、人文社会など）や対象者（若手、女性、NPOなど）の「タグ」をクリックするだけで、今すぐ応募できる案件を瞬時にリストアップできます。</li>
+            <li><strong>リアルタイムな公募情報：</strong> 概ね「締め切りが3ヶ月先まで」の、現在アクティブに募集が行われている最新情報に絞って掲載しています。過去の終了した公募に惑わされることはありません。</li>
+            <li><strong>申請のノウハウも提供：</strong> データベースだけでなく、「採択される申請書（ポンチ絵）の書き方」や「不採択からのリカバリー戦略」など、資金獲得のための実践的なコラムも合わせて発信しています。</li>
+        </ul>
+
+        <h3>対象となる方</h3>
+        <p>
+            ・新しい研究テーマの立ち上げ資金（スモールスタート）を探している若手研究者<br>
+            ・科研費以外の外部資金比率を高めたい中堅・シニア研究者<br>
+            ・奨学金や海外渡航費の支援を必要としている大学院生・ポスドク<br>
+            ・社会課題の解決に取り組むNPO法人や市民団体の方
+        </p>
+        
+        <p>
+            Grantyは、研究に情熱を注ぐ皆様が「資金探し」という事務作業から解放され、1秒でも長く研究そのものに没頭できる環境づくりをサポートします。ぜひ、次なるブレイクスルーのための資金獲得にご活用ください。
+        </p>
+    </div>
+
+    <div style="padding: 0 30px 30px;">
+        <div class="column-section">
+            <h3><i class="fa-solid fa-lightbulb"></i> 資金獲得に役立つ専門コラム</h3>
+            <div class="column-grid">
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/research-grant-search-tips/" target="_blank">【研究費獲得】初心者でもわかる！研究助成金の効率的な探し方と獲得のコツ</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/winning-grant-proposal-writing/" target="_blank">【採択率UP】審査員はここを見ている！「通る」研究計画書の書き方・5つの鉄則</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/kakenhi-vs-private-grants/" target="_blank">【研究費の戦略】科研費だけで大丈夫？民間助成金を狙うべき3つの理由</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/direct-vs-indirect-costs/" target="_blank">【保存版】「間接経費」って何？研究費の「直接経費」との違いと予算ルール完全解説</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/grant-interview-presentation-tips/" target="_blank">【面接対策】ヒアリング審査で「落ちる人」の共通点と、3分で心を掴むプレゼン術</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/research-funding-inequality/" target="_blank">【研究格差】地方・中小大学の研究者が不利な「情報戦」を終わらせるために</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/research-grant-career-strategy/" target="_blank">【実績ゼロの戦略】いきなり科研費は危険？民間助成金をステップにする方法</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/grant-proposal-recycle-strategy/" target="_blank">【不採択からの逆転】落ちた申請書は捨てるな！別の助成金で「リサイクル」する戦略</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/grant-proposal-visual-tips/" target="_blank">【採択率アップ】文字ばかりは読まれない！審査員の目を引く「図解」3つの鉄則</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/grant-proposal-final-checklist/" target="_blank">【完全版】提出ボタンを押す前に！採択率を分ける「最終チェックリスト」10項目</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/post-award-grant-management/" target="_blank">【採択後も重要】助成金をもらったらやるべき3つのこと。報告書作成と信頼構築</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/how-to-build-research-cv-for-grants/" target="_blank">【逆転】助成金審査で選ばれる「研究者CV」の作り方：業績が少なくてもアピール</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/grant-budget-planning-tips/" target="_blank">【審査員はここを見る】助成金が通る「予算計画」の作り方：経費内訳の書き方</a>
+                </div>
+                <div class="column-card">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <a href="https://granty.site/column/how-to-use-granty-database/" target="_blank">【完全ガイド】公募データベース「Granty」の賢い使い方と活用事例</a>
+                </div>
+                <div class="column-card" style="border-color: #ffcccc; background: #fffafb;">
+                    <i class="fa-solid fa-star" style="color: #ff5252;"></i>
+                    <a href="https://granty.site/column/research-grant-faq-tips/" target="_blank" style="font-weight: bold;">
+                        <span class="new-badge">NEW</span>【保存版】助成金申請で迷ったら読む！採択率を上げるQ&Aとよくある疑問10選
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><a href="privacy.html">プライバシーポリシー</a> | <a href="about.html">運営者情報・お問い合わせ</a></p>
+        <p>&copy; 2026 Granty</p>
+    </footer>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/2.2.1/js/dataTables.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
+
+  <script>
+    const GAS_API_URL = "./data.json";
+    const DISPLAY_COLUMNS = ["★", "✓", "機関名等", "助成金名等", "〆切", "金額", "タグ", "更新日"];
+    const FAV_STORAGE_KEY = "granty_favorites";
+    const VIEWED_STORAGE_KEY = "granty_viewed";
+
+    // --- localStorage ヘルパー ---
+    function getFavs() {
+        try { return JSON.parse(localStorage.getItem(FAV_STORAGE_KEY) || "[]"); }
+        catch(e) { return []; }
+    }
+    function saveFavs(favs) {
+        localStorage.setItem(FAV_STORAGE_KEY, JSON.stringify(favs));
+    }
+    function isFav(id) { return getFavs().includes(id); }
+    function toggleFav(id) {
+        var favs = getFavs();
+        var idx = favs.indexOf(id);
+        if (idx === -1) { favs.push(id); } else { favs.splice(idx, 1); }
+        saveFavs(favs);
+        return idx === -1;
+    }
+
+    function getViewed() {
+        try { return JSON.parse(localStorage.getItem(VIEWED_STORAGE_KEY) || "[]"); }
+        catch(e) { return []; }
+    }
+    function addViewed(id) {
+        var viewed = getViewed();
+        if (!viewed.includes(id)) { viewed.push(id); }
+        localStorage.setItem(VIEWED_STORAGE_KEY, JSON.stringify(viewed));
+    }
+    function removeViewed(id) {
+        var viewed = getViewed().filter(function(v) { return v !== id; });
+        localStorage.setItem(VIEWED_STORAGE_KEY, JSON.stringify(viewed));
+    }
+    function isViewed(id) { return getViewed().includes(id); }
+
+    $(function() {
+      $('body').on('click', '.tag-badge', function(e) {
+          e.preventDefault(); e.stopPropagation();
+          var tagText = $(this).text().trim();
+          var table = $('#myTable').DataTable();
+
+          // タグフィルタードロップダウンのチェックボックスを該当タグだけオンにする
+          var $tagDropdown = $('#tagFilterDropdown');
+          $tagDropdown.find('input[type=checkbox]').each(function() {
+              $(this).prop('checked', $(this).val() === tagText);
+          });
+          // applyTagFilterはinitDataTable内で定義されるため、直接列検索を実行
+          var tagColIndex = DISPLAY_COLUMNS.indexOf("タグ");
+          var regex = $.fn.dataTable.util.escapeRegex(tagText);
+          table.column(tagColIndex).search(regex, true, false).draw();
+          $('#tagFilterBtn').text('1件選択中').addClass('active');
+          $('#clearAllFilters').show();
+
+          var stickyHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--h1-height')) +
+              parseInt(getComputedStyle(document.documentElement).getPropertyValue('--toolbar-height')) +
+              parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thead-col-height')) +
+              parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thead-search-height'));
+          var tableTop = $('#myTable').offset().top - stickyHeight - 8;
+          var scrollTop = $(window).scrollTop();
+          var windowBottom = scrollTop + $(window).height();
+          if (tableTop < scrollTop || tableTop > windowBottom) {
+              $('html, body').animate({ scrollTop: tableTop }, 200);
+          }
+      });
+
+      fetch(GAS_API_URL)
+        .then(r => r.json())
+        .then(data => showTable(data))
+        .catch(e => {
+            console.error(e);
+            $('#status').html('<b style="color:red;">読込エラー</b>');
+        });
+    });
+
+    function showTable(data) {
+      if (!data || data.length === 0) { $('#status').text('データなし'); return; }
+      
+      var header = data[0]; 
+      var rows = data.slice(1);
+      var colMap = {};
+      header.forEach((name, index) => { colMap[name] = index; });
+
+      // ============================================================
+      // ヘッダーHTML：列名行 + 検索窓行 の2行構造
+      // ============================================================
+      var hHtml = "";
+
+      // --- 1行目：列名 ---
+      hHtml += "<tr>";
+      DISPLAY_COLUMNS.forEach(colName => {
+          var className = "";
+          if (colName === "★") className = "col-fav";
+          else if (colName === "✓") className = "col-viewed";
+          else if (colName === "機関名等") className = "col-org";
+          else if (colName === "助成金名等") className = "col-grant";
+          else if (colName === "〆切") className = "col-deadline";
+          else if (colName === "金額") className = "col-amount";
+          else if (colName === "更新日") className = "col-update";
+          else if (colName === "タグ") className = "col-tags";
+          
+          hHtml += `<th class="${className}">${colName}</th>`;
+      });
+      hHtml += "</tr>";
+
+      // --- 2行目：各列の検索入力欄 ---
+      hHtml += "<tr>";
+      DISPLAY_COLUMNS.forEach(colName => {
+          if (colName === "★") {
+              // ★列にはお気に入りのみ表示トグルボタン
+              hHtml += `<th><button id="favFilterToggle" class="fav-filter-toggle" title="お気に入りのみ表示">☆</button></th>`;
+              return;
+          }
+          if (colName === "✓") {
+              hHtml += `<th><button id="viewedFilterToggle" class="viewed-filter-toggle" title="未閲覧のみ表示">✓</button></th>`;
+              return;
+          }
+          if (colName === "金額") {
+              hHtml += `<th id="amountSliderTh">
+                  <div class="amount-slider-wrap">
+                      <div class="amount-slider-labels">
+                          <span id="amountLabelMin">0万円</span>
+                          <span>〜</span>
+                          <span id="amountLabelMax">上限なし</span>
+                      </div>
+                      <div id="amountSlider"></div>
+                      <label class="amount-include-unknown">
+                          <input type="checkbox" id="amountIncludeUnknown" checked>金額不明を含む
+                      </label>
+                  </div>
+              </th>`;
+              return;
+          }
+          if (colName === "更新日") {
+              hHtml += `<th>
+                  <div class="update-filter-wrap">
+                      <button class="update-filter-btn" id="updateFilterBtn">すべて</button>
+                      <div class="update-filter-dropdown" id="updateFilterDropdown">
+                          <div class="update-filter-controls">
+                              <button id="updateFilterSelectAll">全選択</button>
+                              <button id="updateFilterClearAll">解除</button>
+                          </div>
+                      </div>
+                  </div>
+              </th>`;
+              return;
+          }
+          if (colName === "タグ") {
+              hHtml += `<th>
+                  <div class="update-filter-wrap">
+                      <button class="update-filter-btn" id="tagFilterBtn">すべて</button>
+                      <div class="update-filter-dropdown" id="tagFilterDropdown">
+                          <div class="update-filter-controls">
+                              <button id="tagFilterSelectAll">全選択</button>
+                              <button id="tagFilterClearAll">解除</button>
+                          </div>
+                      </div>
+                  </div>
+              </th>`;
+              return;
+          }
+          var placeholder = colName + "で絞込";
+          hHtml += `<th>
+              <div class="col-search-wrap">
+                  <input type="text" class="col-search" data-col="${colName}" placeholder="${placeholder}" autocomplete="off">
+                  <span class="col-search-clear" title="クリア">✕</span>
+              </div>
+          </th>`;
+      });
+      hHtml += "</tr>";
+
+      document.getElementById("tableHeadArea").innerHTML = hHtml;
+
+      var bHtml = "";
+      var validCount = 0;
+      var validFavIds = []; // 期限内のレコードのfavIdを収集
+      var today = new Date(); today.setHours(0,0,0,0);
+
+      rows.forEach(row => {
+          var deadlineStr = row[colMap["〆切"]];
+          var deadlineObj = new Date(deadlineStr);
+          if (deadlineStr && !isNaN(deadlineObj.getTime()) && deadlineObj < today) return;
+
+          // お気に入りのIDとして「助成金名+機関名」を使用
+          var favId = (row[colMap["助成金名等"]] || "") + "|" + (row[colMap["機関名等"]] || "");
+          validFavIds.push(favId);
+          var favActive = isFav(favId) ? "active" : "";
+          var favIcon = isFav(favId) ? "★" : "☆";
+          var viewedActive = isViewed(favId) ? "active" : "";
+          var viewedRowClass = isViewed(favId) ? "viewed-row" : "";
+
+          validCount++;
+          bHtml += `<tr data-fav-id="${encodeURIComponent(favId)}" class="${viewedRowClass}">`;
+          
+          DISPLAY_COLUMNS.forEach(colName => {
+              if (colName === "★") {
+                  bHtml += `<td class="col-fav"><button class="fav-btn ${favActive}" title="お気に入り登録">${favIcon}</button></td>`;
+                  return;
+              }
+              if (colName === "✓") {
+                  bHtml += `<td class="col-viewed"><button class="viewed-btn ${viewedActive}" title="閲覧済みにする">${viewedActive ? '✓' : '　'}</button></td>`;
+                  return;
+              }
+              var idx = colMap[colName];
+              var val = (row[idx] === undefined || row[idx] === null) ? "" : String(row[idx]);
+              var display = val;
+              var sortAttr = "";
+
+              if (colName === "金額") {
+                  var lowerRaw = parseInt(row[colMap["下限"]], 10);
+                  var upperRaw = parseInt(row[colMap["上限"]], 10);
+                  var hasLower = !isNaN(lowerRaw) && lowerRaw > 0;
+                  var hasUpper = !isNaN(upperRaw) && upperRaw > 0;
+                  var displayAmt, sortAmt;
+                  // 万円単位の数値を億・万で表示する関数
+                  function formatAmt(val) {
+                      if (val >= 10000) {
+                          var oku = val / 10000;
+                          // 割り切れる場合は整数表示、そうでなければ小数1桁
+                          return (oku % 1 === 0 ? oku : oku.toFixed(1)) + '億';
+                      }
+                      return val + '万';
+                  }
+
+                  if (!hasLower && !hasUpper) {
+                      displayAmt = '―';
+                      sortAmt = 0;
+                  } else if (hasLower && hasUpper) {
+                      displayAmt = formatAmt(lowerRaw) + '～' + formatAmt(upperRaw);
+                      sortAmt = upperRaw;
+                  } else if (hasUpper) {
+                      displayAmt = '～' + formatAmt(upperRaw);
+                      sortAmt = upperRaw;
+                  } else {
+                      displayAmt = formatAmt(lowerRaw) + '～';
+                      sortAmt = lowerRaw;
+                  }
+                  // data-lower / data-upper をカスタム属性として持たせてフィルターで使う
+                  bHtml += `<td class="col-amount" data-order="${sortAmt}" data-lower="${hasLower ? lowerRaw : 0}" data-upper="${hasUpper ? upperRaw : 0}">${displayAmt}</td>`;
+                  return;
+              }
+              if (colName === "助成金名等") {
+                  var url = row[colMap["URL"]];
+                  if (url && url.startsWith("http")) {
+                      display = `<a href="${url}" target="_blank" class="grant-link">${val}</a>`;
+                  }
+              }
+              else if (colName === "タグ" && val) {
+                  display = val.split(/,|、/).map(t => `<span class="tag-badge">${t.trim()}</span>`).join(" ");
+              }
+              else if (colName === "〆切") {
+                  if (!isNaN(deadlineObj.getTime())) {
+                      sortAttr = ` data-order="${deadlineObj.getTime()}"`;
+                  } else {
+                      sortAttr = ` data-order="9999999999999"`; 
+                  }
+              }
+              else if (colName === "更新日") {
+                  var updateD = new Date(val);
+                  if (!isNaN(updateD.getTime())) {
+                      sortAttr = ` data-order="${updateD.getTime()}"`;
+                  }
+              }
+
+              bHtml += `<td${sortAttr}>${display}</td>`;
+          });
+          bHtml += "</tr>";
+      });
+      document.getElementById("tableBody").innerHTML = bHtml;
+
+      // 期限切れになったレコードをお気に入り・閲覧済みから削除
+      var cleanedFavs = getFavs().filter(function(id) { return validFavIds.includes(id); });
+      saveFavs(cleanedFavs);
+      var cleanedViewed = getViewed().filter(function(id) { return validFavIds.includes(id); });
+      localStorage.setItem(VIEWED_STORAGE_KEY, JSON.stringify(cleanedViewed));
+      
+      initDataTable(validCount);
+      $('#status').html(`<i class="fa-solid fa-check-circle"></i> 受付中: ${validCount}件`);
+    }
+
+    function initDataTable(validCount) {
+        var favOnlyMode = false;
+        var unviewedOnlyMode = false;
+        var updateCheckedValues = null;
+        var tagCheckedValues = null;
+        // 金額フィルター
+        var AMOUNT_STEP = 100;
+        var AMOUNT_MAX  = 3000;
+        var amountMin = 0;
+        var amountMax = AMOUNT_MAX;
+        var amountIncludeUnknown = true;
+
+        var table = $('#myTable').DataTable({
+            paging: true,
+            searching: true,
+            info: true,
+            orderCellsTop: true,
+            order: [[4, "asc"]], // ★✓が0,1、機関=2、助成金=3、〆切=4
+            columnDefs: [
+                { orderable: false, targets: "_all" },
+                { searchable: false, targets: [0, 1, 5] } // ★✓金額はグローバル検索対象外
+            ],
+            pageLength: 50,
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "全件"]],
+            language: { url: "https://cdn.datatables.net/plug-ins/2.2.1/i18n/ja.json" },
+            autoWidth: false,
+            // ページ切替・再描画のたびに★状態を復元
+            drawCallback: function() {
+                $('#myTable tbody tr').each(function() {
+                    var favId = decodeURIComponent($(this).data('fav-id') || '');
+                    if (!favId) return;
+                    var $favBtn = $(this).find('.fav-btn');
+                    if (isFav(favId)) {
+                        $favBtn.addClass('active').text('★');
+                    } else {
+                        $favBtn.removeClass('active').text('☆');
+                    }
+                    var $viewedBtn = $(this).find('.viewed-btn');
+                    if (isViewed(favId)) {
+                        $viewedBtn.addClass('active').text('✓');
+                        $(this).addClass('viewed-row');
+                    } else {
+                        $viewedBtn.removeClass('active').text('\u3000');
+                        $(this).removeClass('viewed-row');
+                    }
+                });
+                updateFavCount();
+            },
+            initComplete: function() {
+                // トップに戻るボタン
+                var $bottomLeft = $('.dt-layout-row:last-child .dt-start');
+                if ($bottomLeft.length === 0) {
+                     $('.dt-layout-row:last-child').prepend('<div class="dt-layout-cell dt-start"></div>');
+                     $bottomLeft = $('.dt-layout-row:last-child .dt-start');
+                }
+                var $topBtn = $('<button class="scroll-top-btn"><i class="fa-solid fa-arrow-up"></i> トップに戻る</button>');
+                $bottomLeft.prepend($topBtn);
+                $topBtn.on('click', function() { $('html, body').animate({ scrollTop: 0 }, 300); });
+
+                // 全クリアボタンをグローバル検索の隣に挿入
+                var $clearAll = $('<button id="clearAllFilters"><i class="fa-solid fa-xmark"></i> 絞込クリア</button>');
+                $('.dt-search').after($clearAll);
+                $clearAll.on('click', function() {
+                    // 列検索・グローバル検索リセット
+                    table.columns().search('');
+                    table.search('');
+                    $('input.col-search').val('').removeClass('active');
+                    // お気に入りフィルターリセット
+                    favOnlyMode = false;
+                    $('#showFavOnly').removeClass('active').html('★ お気に入りのみ <span id="favCount"></span>');
+                    $('#favFilterToggle').removeClass('active').text('☆');
+                    removeFavOnlyFilter();
+                    // 未閲覧フィルターリセット
+                    unviewedOnlyMode = false;
+                    $('#viewedFilterToggle').removeClass('active');
+                    removeUnviewedOnlyFilter();
+                    // 更新日フィルターリセット（resetUpdateFilterはまだ定義されていないため直接記述）
+                    $('#updateFilterDropdown input[type=checkbox]').prop('checked', true);
+                    updateCheckedValues = null;
+                    $('#updateFilterBtn').text('すべて').removeClass('active');
+                    table.column(updateColIndex).search('', true, false);
+                    // タグフィルターリセット
+                    $('#tagFilterDropdown input[type=checkbox]').prop('checked', true);
+                    tagCheckedValues = null;
+                    $('#tagFilterBtn').text('すべて').removeClass('active');
+                    table.column(tagColIndex).search('', true, false);
+                    // 金額フィルターリセット
+                    amountMin = 0; amountMax = AMOUNT_MAX; amountIncludeUnknown = true;
+                    if (window._amountSlider) window._amountSlider.set([0, AMOUNT_MAX]);
+                    $('#amountIncludeUnknown').prop('checked', true);
+                    $('#amountSliderTh').removeClass('amount-active');
+                    removeAmountFilter();
+                    // 最後に1回だけdraw
+                    table.draw();
+                    $(this).hide();
+                });
+
+                // お気に入りのみ表示ボタン
+                var $favBtn = $('<button id="showFavOnly">★ お気に入りのみ <span id="favCount"></span></button>');
+                $clearAll.after($favBtn);
+                updateFavCount();
+
+                $favBtn.on('click', function() {
+                    toggleFavOnlyMode();
+                });
+            }
+        });
+
+        // ページ切替時にテーブル先頭へスクロール
+        table.on('page.dt', function() {
+            var stickyHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--h1-height')) +
+                               parseInt(getComputedStyle(document.documentElement).getPropertyValue('--toolbar-height')) +
+                               parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thead-col-height')) +
+                               parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thead-search-height'));
+            var tableTop = $('#myTable').offset().top - stickyHeight - 8;
+            $('html, body').animate({ scrollTop: tableTop }, 200);
+        });
+
+        // ============================================================
+        // 更新日フィルター（チェックボックス式ドロップダウン）
+        // ============================================================
+        var updateColIndex = DISPLAY_COLUMNS.indexOf("更新日");
+        var updateCheckedValues = null;
+        var tagColIndex = DISPLAY_COLUMNS.indexOf("タグ");
+        var tagCheckedValues = null;
+
+        // 更新日フィルターをリセットする共通関数（絞込クリア以外から呼ぶ用）
+        function resetUpdateFilter() {
+            $('#updateFilterDropdown input[type=checkbox]').prop('checked', true);
+            updateCheckedValues = null;
+            $('#updateFilterBtn').text('すべて').removeClass('active');
+            table.column(updateColIndex).search('', true, false);
+        }
+
+        // 更新日の表示順（新しい順）
+        var updateSortOrder = [
+            "1日前", "2日前", "3日前", "4日前", "5日前", "6日前",
+            "一週間前", "二週間前", "三週間前", "一月以上前"
+        ];
+
+        // 更新日列のユニーク値をtbodyのDOMから直接収集
+        var updateUniqueValues = [];
+        $('#myTable tbody tr').each(function() {
+            var $cells = $(this).find('td');
+            var text = $cells.eq(updateColIndex).text().trim();
+            if (text && !updateUniqueValues.includes(text)) {
+                updateUniqueValues.push(text);
+            }
+        });
+        // カスタム順でソート（定義外の値は末尾に）
+        updateUniqueValues.sort(function(a, b) {
+            var ai = updateSortOrder.indexOf(a);
+            var bi = updateSortOrder.indexOf(b);
+            if (ai === -1) ai = 999;
+            if (bi === -1) bi = 999;
+            return ai - bi;
+        });
+
+        var $dropdown = $('#updateFilterDropdown');
+        updateUniqueValues.forEach(function(val) {
+            var $item = $('<label class="update-filter-item"></label>');
+            var $chk = $('<input type="checkbox" checked>').val(val);
+            $item.append($chk).append($('<span>').text(val));
+            $dropdown.append($item);
+        });
+
+        // ドロップダウン開閉
+        $('#myTable thead').on('click', '#updateFilterBtn', function(e) {
+            e.stopPropagation();
+            $dropdown.toggleClass('open');
+        });
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.update-filter-wrap').length) {
+                $dropdown.removeClass('open');
+            }
+        });
+        $dropdown.on('click', function(e) { e.stopPropagation(); });
+
+        // 全選択・解除ボタンに直接バインド（生成直後なのでdirect bindが確実）
+        $dropdown.find('#updateFilterSelectAll').on('click', function() {
+            $dropdown.find('input[type=checkbox]').prop('checked', true);
+            applyUpdateFilter();
+        });
+        $dropdown.find('#updateFilterClearAll').on('click', function() {
+            $dropdown.find('input[type=checkbox]').prop('checked', false);
+            applyUpdateFilter();
+            // 結果が0件になりフォーカスが迷子になるのを防ぐ
+            var stickyHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--h1-height')) +
+                               parseInt(getComputedStyle(document.documentElement).getPropertyValue('--toolbar-height')) +
+                               parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thead-col-height')) +
+                               parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thead-search-height'));
+            var tableTop = $('#myTable').offset().top - stickyHeight - 8;
+            $('html, body').animate({ scrollTop: tableTop }, 200);
+        });
+
+        // チェックボックス変更
+        $dropdown.on('change', 'input[type=checkbox]', function() {
+            applyUpdateFilter();
+        });
+
+        function applyUpdateFilter() {
+            var checked = [];
+            $dropdown.find('input:checked').each(function() {
+                checked.push($(this).val());
+            });
+            var allChecked = checked.length === updateUniqueValues.length;
+            updateCheckedValues = allChecked ? null : checked;
+
+            // ボタンラベルを更新
+            var $btn = $('#updateFilterBtn');
+            if (allChecked) {
+                $btn.text('すべて').removeClass('active');
+            } else if (checked.length === 0) {
+                $btn.text('（なし）').addClass('active');
+            } else {
+                $btn.text(checked.length + '件選択中').addClass('active');
+            }
+
+            // DataTables列検索：正規表現で完全一致OR
+            if (allChecked) {
+                table.column(updateColIndex).search('', true, false).draw();
+            } else if (checked.length === 0) {
+                table.column(updateColIndex).search('NOMATCH_____', true, false).draw();
+            } else {
+                var regex = '^(' + checked.map(function(v) {
+                    return $.fn.dataTable.util.escapeRegex(v);
+                }).join('|') + ')$';
+                table.column(updateColIndex).search(regex, true, false).draw();
+            }
+            updateClearAllButton();
+        }
+
+        // ============================================================
+        // タグフィルター（チェックボックス式ドロップダウン）
+        // ============================================================
+
+        // タグは固定の2文字定義（表示順もこの順序で固定）
+        var tagUniqueValues = ["研究","事業","連携","顕彰","交流","刊行","創業","人材","奨学","支援","若手","地域","女性"];
+
+        var $tagDropdown = $('#tagFilterDropdown');
+        tagUniqueValues.forEach(function(val) {
+            var $item = $('<label class="update-filter-item"></label>');
+            var $chk = $('<input type="checkbox" checked>').val(val);
+            $item.append($chk).append($('<span>').text(val));
+            $tagDropdown.append($item);
+        });
+
+        // ドロップダウン開閉
+        $('#myTable thead').on('click', '#tagFilterBtn', function(e) {
+            e.stopPropagation();
+            // 更新日ドロップダウンは閉じる
+            $('#updateFilterDropdown').removeClass('open');
+            $tagDropdown.toggleClass('open');
+        });
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#tagFilterDropdown, #tagFilterBtn').length) {
+                $tagDropdown.removeClass('open');
+            }
+        });
+        $tagDropdown.on('click', function(e) { e.stopPropagation(); });
+
+        // 全選択・解除ボタン
+        $tagDropdown.find('#tagFilterSelectAll').on('click', function() {
+            $tagDropdown.find('input[type=checkbox]').prop('checked', true);
+            applyTagFilter();
+        });
+        $tagDropdown.find('#tagFilterClearAll').on('click', function() {
+            $tagDropdown.find('input[type=checkbox]').prop('checked', false);
+            applyTagFilter();
+            var stickyHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--h1-height')) +
+                               parseInt(getComputedStyle(document.documentElement).getPropertyValue('--toolbar-height')) +
+                               parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thead-col-height')) +
+                               parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thead-search-height'));
+            $('html, body').animate({ scrollTop: $('#myTable').offset().top - stickyHeight - 8 }, 200);
+        });
+
+        // チェックボックス変更
+        $tagDropdown.on('change', 'input[type=checkbox]', function() {
+            applyTagFilter();
+        });
+
+        function applyTagFilter() {
+            var checked = [];
+            $tagDropdown.find('input:checked').each(function() {
+                checked.push($(this).val());
+            });
+            var allChecked = checked.length === tagUniqueValues.length;
+            tagCheckedValues = allChecked ? null : checked;
+
+            var $btn = $('#tagFilterBtn');
+            if (allChecked) {
+                $btn.text('すべて').removeClass('active');
+            } else if (checked.length === 0) {
+                $btn.text('（なし）').addClass('active');
+            } else {
+                $btn.text(checked.length + '件選択中').addClass('active');
+            }
+
+            // タグは部分一致OR検索（1セルに複数タグが入っているため）
+            if (allChecked) {
+                table.column(tagColIndex).search('', true, false).draw();
+            } else if (checked.length === 0) {
+                table.column(tagColIndex).search('NOMATCH_____', true, false).draw();
+            } else {
+                var regex = checked.map(function(v) {
+                    return $.fn.dataTable.util.escapeRegex(v);
+                }).join('|');
+                table.column(tagColIndex).search(regex, true, false).draw();
+            }
+            updateClearAllButton();
+        }
+
+        // ============================================================
+        // 金額フィルター（noUiSlider）
+        // ============================================================
+        var amountColIndex = DISPLAY_COLUMNS.indexOf("金額");
+
+        function amountFilter(settings, data, dataIndex) {
+            var $td = $(table.row(dataIndex).node()).find('td').eq(amountColIndex);
+            var lowerVal = parseInt($td.data('lower'), 10) || 0;
+            var upperVal = parseInt($td.data('upper'), 10) || 0;
+            var isUnknown = (lowerVal === 0 && upperVal === 0);
+
+            if (isUnknown) return amountIncludeUnknown;
+
+            var effectiveUpper = (upperVal === 0) ? AMOUNT_MAX : upperVal;
+            var overlapMin = Math.max(lowerVal, amountMin);
+            var overlapMax = (amountMax >= AMOUNT_MAX) ? effectiveUpper : Math.min(effectiveUpper, amountMax);
+            return overlapMin <= overlapMax;
+        }
+
+        function removeAmountFilter() {
+            var idx = $.fn.dataTable.ext.search.indexOf(amountFilter);
+            if (idx !== -1) $.fn.dataTable.ext.search.splice(idx, 1);
+        }
+
+        function isAmountFiltered() {
+            return amountMin > 0 || amountMax < AMOUNT_MAX || !amountIncludeUnknown;
+        }
+
+        function applyAmountFilter() {
+            removeAmountFilter();
+            if (isAmountFiltered()) {
+                $.fn.dataTable.ext.search.push(amountFilter);
+                $('#amountSliderTh').addClass('amount-active');
+            } else {
+                $('#amountSliderTh').removeClass('amount-active');
+            }
+            table.draw();
+            updateClearAllButton();
+        }
+
+        // noUiSlider初期化
+        var sliderEl = document.getElementById('amountSlider');
+        if (sliderEl && typeof noUiSlider !== 'undefined') {
+            noUiSlider.create(sliderEl, {
+                start: [0, AMOUNT_MAX],
+                connect: true,
+                step: AMOUNT_STEP,
+                range: { min: 0, max: AMOUNT_MAX },
+                format: {
+                    to: function(v) { return Math.round(v); },
+                    from: function(v) { return Math.round(v); }
+                }
+            });
+            window._amountSlider = sliderEl.noUiSlider;
+
+            sliderEl.noUiSlider.on('update', function(values) {
+                amountMin = parseInt(values[0], 10);
+                amountMax = parseInt(values[1], 10);
+                $('#amountLabelMin').text(amountMin === 0 ? '0万円' : amountMin + '万円');
+                $('#amountLabelMax').text(amountMax >= AMOUNT_MAX ? '上限なし' : amountMax + '万円');
+                var isActive = amountMin > 0 || amountMax < AMOUNT_MAX;
+                $('#amountLabelMin').toggleClass('active-label', isActive);
+                $('#amountLabelMax').toggleClass('active-label', isActive);
+            });
+            sliderEl.noUiSlider.on('change', function() {
+                applyAmountFilter();
+            });
+        }
+
+        // 「金額不明を含む」チェックボックス
+        $(document).on('change', '#amountIncludeUnknown', function() {
+            amountIncludeUnknown = $(this).prop('checked');
+            applyAmountFilter();
+        });
+
+        // ============================================================
+        // ✓ボタンのクリックイベント（手動トグル）
+        // ============================================================
+        $('#myTable tbody').on('click', '.viewed-btn', function() {
+            var $btn = $(this);
+            var $row = $(this).closest('tr');
+            var favId = decodeURIComponent($row.data('fav-id') || '');
+            if (!favId) return;
+            if (isViewed(favId)) {
+                removeViewed(favId);
+                $btn.removeClass('active').text('\u3000');
+                $row.removeClass('viewed-row');
+            } else {
+                addViewed(favId);
+                $btn.addClass('active').text('✓');
+                $row.addClass('viewed-row');
+            }
+        });
+
+        // リンクをクリックしたら自動で閲覧済みにする
+        $('#myTable tbody').on('click', '.grant-link', function() {
+            var $row = $(this).closest('tr');
+            var favId = decodeURIComponent($row.data('fav-id') || '');
+            if (!favId) return;
+            addViewed(favId);
+            $row.find('.viewed-btn').addClass('active').text('✓');
+            $row.addClass('viewed-row');
+        });
+
+        // ============================================================
+        // ★ボタンのクリックイベント（委譲）
+        // ============================================================
+        $('#myTable tbody').on('click', '.fav-btn', function() {
+            var $btn = $(this);
+            var favId = decodeURIComponent($(this).closest('tr').data('fav-id') || '');
+            if (!favId) return;
+            var added = toggleFav(favId);
+            $btn.toggleClass('active', added).text(added ? '★' : '☆');
+            updateFavCount();
+            // お気に入りのみ表示中に削除したら再描画
+            if (favOnlyMode) table.draw();
+        });
+
+        // 検索窓行の☆/★トグルボタン（ヘッダー内）
+        $('#myTable thead').on('click', '#favFilterToggle', function() {
+            var stickyHeight = parseInt(getComputedStyle(document.documentElement)
+                .getPropertyValue('--h1-height')) +
+                parseInt(getComputedStyle(document.documentElement)
+                .getPropertyValue('--toolbar-height')) +
+                parseInt(getComputedStyle(document.documentElement)
+                .getPropertyValue('--thead-col-height')) +
+                parseInt(getComputedStyle(document.documentElement)
+                .getPropertyValue('--thead-search-height'));
+            var tableTop = $('#myTable').offset().top - stickyHeight - 8;
+            var scrollTop = $(window).scrollTop();
+            var windowBottom = scrollTop + $(window).height();
+            if (tableTop < scrollTop || tableTop > windowBottom) {
+                $('html, body').animate({ scrollTop: tableTop }, 200);
+            }
+            toggleFavOnlyMode();
+        });
+
+        // 検索窓行の✓トグルボタン（ヘッダー内）
+        $('#myTable thead').on('click', '#viewedFilterToggle', function() {
+            var stickyHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--h1-height')) +
+                parseInt(getComputedStyle(document.documentElement).getPropertyValue('--toolbar-height')) +
+                parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thead-col-height')) +
+                parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thead-search-height'));
+            var tableTop = $('#myTable').offset().top - stickyHeight - 8;
+            var scrollTop = $(window).scrollTop();
+            var windowBottom = scrollTop + $(window).height();
+            if (tableTop < scrollTop || tableTop > windowBottom) {
+                $('html, body').animate({ scrollTop: tableTop }, 200);
+            }
+            toggleUnviewedOnlyMode();
+        });
+
+        function unviewedOnlyFilter(settings, data, dataIndex) {
+            var $row = $(table.row(dataIndex).node());
+            var favId = decodeURIComponent($row.data('fav-id') || '');
+            return !isViewed(favId); // 未閲覧のみ通す
+        }
+
+        function removeUnviewedOnlyFilter() {
+            var idx = $.fn.dataTable.ext.search.indexOf(unviewedOnlyFilter);
+            if (idx !== -1) $.fn.dataTable.ext.search.splice(idx, 1);
+        }
+
+        function toggleUnviewedOnlyMode() {
+            unviewedOnlyMode = !unviewedOnlyMode;
+            $('#viewedFilterToggle').toggleClass('active', unviewedOnlyMode);
+            if (unviewedOnlyMode) {
+                $.fn.dataTable.ext.search.push(unviewedOnlyFilter);
+                $('#clearAllFilters').show();
+            } else {
+                removeUnviewedOnlyFilter();
+                updateClearAllButton();
+            }
+            table.draw();
+        }
+
+        function toggleFavOnlyMode() {
+            favOnlyMode = !favOnlyMode;
+            // 2つのボタンを同期
+            $('#showFavOnly').toggleClass('active', favOnlyMode);
+            $('#favFilterToggle').toggleClass('active', favOnlyMode).text(favOnlyMode ? '★' : '☆');
+            if (favOnlyMode) {
+                $.fn.dataTable.ext.search.push(favOnlyFilter);
+                $('#clearAllFilters').show();
+            } else {
+                removeFavOnlyFilter();
+                updateClearAllButton();
+            }
+            table.draw();
+        }
+
+        function favOnlyFilter(settings, data, dataIndex) {
+            var $row = $(table.row(dataIndex).node());
+            var favId = decodeURIComponent($row.data('fav-id') || '');
+            return isFav(favId);
+        }
+
+        function removeFavOnlyFilter() {
+            var idx = $.fn.dataTable.ext.search.indexOf(favOnlyFilter);
+            if (idx !== -1) $.fn.dataTable.ext.search.splice(idx, 1);
+        }
+
+        // ============================================================
+        // 各列の検索入力欄にイベントを設定
+        // ============================================================
+        $('#myTable thead tr:last-child input.col-search').each(function() {
+            var colName = $(this).data('col');
+            var colIndex = DISPLAY_COLUMNS.indexOf(colName); // ★列が0番なので自動的にずれる
+            if (colIndex === -1) return;
+
+            var $input = $(this);
+            var $clear = $input.siblings('.col-search-clear');
+
+            var timer;
+            $input.on('input', function() {
+                clearTimeout(timer);
+                var val = $input.val();
+                if (val) { $input.addClass('active'); } else { $input.removeClass('active'); }
+                timer = setTimeout(function() {
+                    table.column(colIndex).search(val, false, true).draw();
+                    updateClearAllButton();
+                }, 300);
+            });
+
+            $clear.on('click', function() {
+                $input.val('').removeClass('active');
+                table.column(colIndex).search('').draw();
+                updateClearAllButton();
+            });
+        });
+
+        $('#myTable_filter input').on('input', function() {
+            updateClearAllButton();
+        });
+
+        function updateFavCount() {
+            var count = getFavs().length;
+            $('#favCount').text(count > 0 ? count : '');
+        }
+
+        function updateClearAllButton() {
+            var hasFilter = false;
+            $('input.col-search').each(function() {
+                if ($(this).val()) { hasFilter = true; return false; }
+            });
+            if ($('#myTable_filter input').val()) hasFilter = true;
+            if (favOnlyMode) hasFilter = true;
+            if (unviewedOnlyMode) hasFilter = true;
+            if (updateCheckedValues !== null) hasFilter = true;
+            if (tagCheckedValues !== null) hasFilter = true;
+            if (isAmountFiltered()) hasFilter = true;
+            $('#clearAllFilters').toggle(hasFilter);
+        }
+    }
+  </script>
+</body>
+</html>
