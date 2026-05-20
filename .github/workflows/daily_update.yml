@@ -18,7 +18,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '24'
 
    # 3. GASから最新の data.json をダウンロード
     - name: Fetch latest data.json
