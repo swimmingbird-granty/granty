@@ -1,54 +1,67 @@
 const fs = require('fs');
 const path = require('path');
 
-// 1. ファイルのパスを設定
+// 1. 最新の data.json の読み込み
 const jsonPath = path.join(__dirname, 'data.json');
-const templatePath = path.join(__dirname, 'template.html');
-const outputPath = path.join(__dirname, 'index.html');
-
-try {
-    // 2. data.json と template.html を読み込む
-    const rawData = fs.readFileSync(jsonPath, 'utf8');
-    const jsonData = JSON.parse(rawData);
-    let template = fs.readFileSync(templatePath, 'utf8');
-
-    // 3. JSONデータからHTMLの行（tr/td）を組み立てる
-    let rowsHtml = '';
-    
-    // 1行目はヘッダー["機関名", "助成金名"...] なので、2行目（インデックス1）から処理
-    for (let i = 1; i < jsonData.length; i++) {
-        const row = jsonData[i];
-        
-        // 各列のデータを取得（必要に応じて順番を調整してください）
-        const organ = row[0] || ''; // 機関名
-        const name = row[1] || '';  // 助成金名
-        const url = row[2] || '';   // URL
-        const deadline = row[3] || ''; // 〆切
-        const minAmount = row[4] || ''; // 下限
-        const maxAmount = row[5] || ''; // 上限
-        const tag = row[6] || ''; // タグ
-        
-        // リンク付きの助成金名にする場合
-        const nameTd = url ? `<td><a href="${url}" target="_blank">${name}</a></td>` : `<td>${name}</td>`;
-
-        rowsHtml += `<tr>
-            <td>${organ}</td>
-            ${nameTd}
-            <td>${deadline}</td>
-            <td>${minAmount}</td>
-            <td>${maxAmount}</td>
-            <td>${tag}</td>
-        </tr>\n`;
-    }
-
-    // 4. テンプレートの目印部分を、作成したHTML行に置き換える
-    const finalHtml = template.replace('', rowsHtml);
-
-    // 5. index.html として書き出す
-    fs.writeFileSync(outputPath, finalHtml, 'utf8');
-    console.log('✅ index.html が正常に自動生成されました！');
-
-} catch (error) {
-    console.error('❌ エラーが発生しました:', error);
+if (!fs.existsSync(jsonPath)) {
+    console.error('Error: data.json が見つかりません。先にGASからダウンロードしてください。');
     process.exit(1);
 }
+const rawData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+
+// ヘッダー行とデータ行を分解
+const headers = rawData[0];
+const rows = rawData.slice(1);
+
+// 列名からインデックスへのマッピングを作成（スプレッドシートの列順変更に強くなります）
+const colMap = {};
+headers.forEach((name, index) => { colMap[name] = index; });
+
+let htmlRows = '';
+
+// 2. データのHTML（<tr>）を正確に生成
+rows.forEach((row, i) => {
+    // 必須データの抽出（無ければ空文字やデフォルト値を設定）
+    const id = row[colMap['ID']] || `grant_${i}`; 
+    const org = row[colMap['機関名等']] || '';
+    const title = row[colMap['助成金名等']] || '';
+    const url = row[colMap['URL']] || '#';
+    const deadline = row[colMap['〆切']] || '';
+    const amountText = row[colMap['金額']] || '';
+    const amountNum = row[colMap['金額(数値)']] || 0; // DataTablesソート用の純粋な数値
+    const tagsRaw = row[colMap['タグ']] || '';
+    const updateDate = row[colMap['更新日']] || '';
+
+    // タグをバッジ化
+    const tagBadges = tagsRaw ? tagsRaw.split(/[,，、\s]+/).filter(t => t).map(t => {
+        return `<span class="tag-badge">${t.trim()}</span>`;
+    }).join('') : '';
+
+    // template.html の 8列ヘッダー構造と完全に一致する <tr> を作成
+    htmlRows += `
+        <tr data-id="${id}">
+          <td class="col-fav"><button class="fav-btn" data-id="${id}"><i class="fa-regular fa-star"></i></button></td>
+          <td class="col-viewed"><button class="viewed-btn" data-id="${id}"><i class="fa-solid fa-check"></i></button></td>
+          <td class="col-org">${org}</td>
+          <td class="col-grant"><a href="${url}" target="_blank" class="grant-link">${title}</a></td>
+          <td class="col-deadline">${deadline}</td>
+          <td class="col-amount" data-order="${amountNum}">${amountText}</td>
+          <td class="col-tags">${tagBadges}</td>
+          <td class="col-update">${updateDate}</td>
+        </tr>`;
+});
+
+// 3. 型紙（template.html）を読み込んで置換処理を行う
+const templatePath = path.join(__dirname, 'template.html');
+if (!fs.existsSync(templatePath)) {
+    console.error('Error: template.html が見つかりません。先に作成してください。');
+    process.exit(1);
+}
+const templateHtml = fs.readFileSync(templatePath, 'utf8');
+
+// 型紙の目印部分を生成したHTMLデータに置換
+const finalHtml = templateHtml.replace('', htmlRows);
+
+// 4. 完成した結果を index.html として上書き出力
+fs.writeFileSync(path.join(__dirname, 'index.html'), finalHtml, 'utf8');
+console.log('Success: 新しい静的 index.html が正常に生成されました！');
