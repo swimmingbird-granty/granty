@@ -20,11 +20,11 @@ jobs:
       with:
         node-version: '20'
 
-    # 3. GASから最新の data.json をダウンロード
+   # 3. GASから最新の data.json をダウンロード
     - name: Fetch latest data.json
       run: |
-        curl -L "ここにGASのウェブアプリURL" -o data.json
-
+        curl -L "https://script.google.com/macros/s/AKfycbwAay-3HJFuMHDJGpnld37XBhEZXDw0U5q7czgIFFttu3uiozL1sqxOJY2gfW4nzHKMcQ/exec" -o data.json
+        
     # 4. build.js を実行して index.html を自動生成
     - name: Build static index.html
       run: node build.js
