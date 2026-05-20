@@ -1,6 +1,187 @@
-<table>
-    <thead>
-        </thead>
-    <tbody>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <link rel="canonical" href="https://granty.site/">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-66K2V5L7LP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}\n    gtag('js', new Date());
+    gtag('config', 'G-66K2V5L7LP');
+  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3330421188865475" crossorigin="anonymous"></script>
+
+  <meta charset=\"UTF-8\">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>公募情報データベース Granty｜研究助成金・奨学金・顕彰の公募情報を一元検索</title>
+
+  <meta name="description" content="Granty（グランティ）は、研究者・大学院生・NPO向けに、研究助成金・奨学金・顕彰・学術交流事業の公募情報を一元化した無料データベースです。">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+  <style>
+    /* 元のindex.htmlに用意されていた美しいCSSをここにそのまま維持してください */
+    .viewed-row { opacity: 0.6; background-color: #f9f9f9 !important; }
+    .tag-badge { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; margin-right: 4px; font-size: 12px; }
+    /* (その他のカスタムCSS) */
+  </style>
+</head>
+<body>
+
+  <div id="status" style="display:none;">同期中...</div>
+
+  <div style="padding: 0 30px;" class="table-wrapper">
+    <table id="myTable" class="display" style="width:100%">
+      <thead>
+        <tr>
+          <th class="col-fav">★</th>
+          <th class="col-viewed">✓</th>
+          <th class="col-org">機関名等</th>
+          <th class="col-grant">助成金名等</th>
+          <th class="col-deadline">〆切</th>
+          <th class="col-amount">金額</th>
+          <th class="col-tags">タグ</th>
+          <th class="col-update">更新日</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
         </tbody>
-</table>
+    </table>
+  </div>
+
+  <script>
+    // ローカルストレージ制御用
+    function getFavs() { return JSON.parse(localStorage.getItem('granty_favs') || '[]'); }
+    function saveFavs(favs) { localStorage.setItem('granty_favs', JSON.stringify(favs)); }
+    function getViewed() { return JSON.parse(localStorage.getItem('granty_viewed') || '[]'); }
+    function saveViewed(viewed) { localStorage.setItem('granty_viewed', JSON.stringify(viewed)); }
+
+    var favOnlyMode = false;
+    var unviewedOnlyMode = false;
+    var updateCheckedValues = null;
+    var tagCheckedValues = null;
+
+    $(function() {
+        // 1. 最初からHTMLにある行に対し、ローカルストレージ（★や✓）の状態を復元
+        var favs = getFavs();
+        var viewed = getViewed();
+
+        $('#tableBody tr').each(function() {
+            var $tr = $(this);
+            var id = $tr.attr('data-id');
+
+            if (favs.includes(id)) {
+                $tr.find('.fav-btn').addClass('active').find('i').removeClass('fa-regular').addClass('fa-solid');
+            }
+            if (viewed.includes(id)) {
+                $tr.addClass('viewed-row');
+                $tr.find('.viewed-btn').addClass('active');
+            }
+        });
+
+        // 2. DataTables の初期化（サーバーサイドでのfetchを廃止し、既存HTMLをそのままバインド）
+        var table = $('#myTable').DataTable({
+            "order": [[4, "asc"]], // 〆切のデフォルトソート
+            "pageLength": 50,
+            "columnDefs": [
+                { "orderable": false, "targets": [0, 1] }, // ★と✓は並び替え対象外
+                { "type": "num", "targets": 5 }           // 金額列を数値ソート対応にする
+            ],
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/ja.json"
+            }
+        });
+
+        // 3. お気に入り（★）ボタンのクリックイベント（動的・静的両対応のデリゲーション形式）
+        $('#myTable').on('click', '.fav-btn', function() {
+            var $btn = $(this);
+            var id = $btn.attr('data-id');
+            var currentFavs = getFavs();
+
+            if ($btn.hasClass('active')) {
+                $btn.removeClass('active').find('i').removeClass('fa-solid').addClass('fa-regular');
+                currentFavs = currentFavs.filter(function(i) { return i !== id; });
+            } else {
+                $btn.addClass('active').find('i').removeClass('fa-regular').addClass('fa-solid');
+                currentFavs.push(id);
+            }
+            saveFavs(currentFavs);
+            updateFavCount();
+            if (favOnlyMode) table.draw();
+        });
+
+        // 4. 閲覧済み（✓）ボタンのクリックイベント
+        $('#myTable').on('click', '.viewed-btn', function() {
+            var $btn = $(this);
+            var $tr = $btn.closest('tr');
+            var id = $btn.attr('data-id');
+            var currentViewed = getViewed();
+
+            if ($btn.hasClass('active')) {
+                $btn.removeClass('active');
+                $tr.removeClass('viewed-row');
+                currentViewed = currentViewed.filter(function(i) { return i !== id; });
+            } else {
+                $btn.addClass('active');
+                $tr.addClass('viewed-row');
+                currentViewed.push(id);
+            }
+            saveViewed(currentViewed);
+            if (unviewedOnlyMode) table.draw();
+        });
+
+        // 5. 元々あったカスタム検索フィルター（col-search）のイベント設定
+        $('input.col-search').each(function() {
+            var $input = $(this);
+            var colIndex = $input.data('col');
+            var $clear = $input.siblings('.clear-btn');
+            var timer;
+
+            $input.on('input', function() {
+                clearTimeout(timer);
+                var val = $input.val();
+                if (val) { $input.addClass('active'); } else { $input.removeClass('active'); }
+                timer = setTimeout(function() {
+                    table.column(colIndex).search(val, false, true).draw();
+                    updateClearAllButton();
+                }, 300);
+            });
+
+            $clear.on('click', function() {
+                $input.val('').removeClass('active');
+                table.column(colIndex).search('').draw();
+                updateClearAllButton();
+            });
+        });
+
+        $('#myTable_filter input').on('input', function() {
+            updateClearAllButton();
+        });
+
+        function updateFavCount() {
+            var count = getFavs().length;
+            $('#favCount').text(count > 0 ? count : '');
+        }
+
+        function updateClearAllButton() {
+            var hasFilter = false;
+            $('input.col-search').each(function() {
+                if ($(this).val()) { hasFilter = true; return false; }
+            });
+            if ($('#myTable_filter input').val()) hasFilter = true;
+            if (favOnlyMode) hasFilter = true;
+            if (unviewedOnlyMode) hasFilter = true;
+            if (updateCheckedValues !== null) hasFilter = true;
+            if (tagCheckedValues !== null) hasFilter = true;
+            if (typeof isAmountFiltered === 'function' && isAmountFiltered()) hasFilter = true;
+            $('#clearAllFilters').toggle(hasFilter);
+        }
+
+        // 初期カウントの実行
+        updateFavCount();
+    });
+  </script>
+</body>
+</html>
