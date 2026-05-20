@@ -1,0 +1,44 @@
+name: Daily Granty Update
+
+on:
+  schedule:
+    - cron: '0 17 * * *' # 毎日日本時間の深夜2:00（UTC 17:00）に実行
+  workflow_dispatch: # 手動実行ボタンも設置
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. リポジトリのコードをチェックアウト
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Node.js の環境をセットアップ（build.jsを動かすため）
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    # 3. GASから最新の data.json をダウンロード
+    - name: Fetch latest data.json
+      run: |
+        curl -L "ここにGASのウェブアプリURL" -o data.json
+
+    # 4. build.js を実行して index.html を自動生成
+    - name: Build static index.html
+      run: node build.js
+
+    # 5. 変更された index.html と data.json を GitHub にコミット＆プッシュ
+    - name: Commit and Push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data.json index.html
+        # 変更がある場合のみコミットしてプッシュする
+        if ! git diff --cached --quiet; then
+          git commit -m "Automated daily data & HTML update"
+          git push origin main
+        else
+          echo "No changes detected."
+        fi
