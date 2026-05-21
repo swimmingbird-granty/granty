@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>運営者情報・お問い合わせ | 公募情報データベース Granty</title>
+  <meta name="description" content="公募情報データベースGrantyの運営者情報とお問い合わせフォームのページです。研究助成金・奨学金情報の訂正依頼・削除依頼・ご質問はこちらからどうぞ。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #2c5f88;
+      --primary-light: #eef5f9;
+      --accent-color: #d4a017;
+      --text-color: #333333;
+      --bg-color: #f4f7f6;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: "Noto Sans JP", sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      line-height: 1.8;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    .site-header {
+      background-color: var(--primary-color);
+      padding: 16px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-header a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .site-header .back-btn {
+      font-size: 13px;
+      background: rgba(255,255,255,0.2);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-weight: 400;
+    }
+    .site-header .back-btn:hover { background: rgba(255,255,255,0.35); }
+    .hero {
+      background: linear-gradient(135deg, var(--primary-color) 0%, #1e4a6e 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 24px;
+      margin: 0 0 8px;
+    }
+    .hero p {
+      font-size: 14px;
+      opacity: 0.85;
+      margin: 0;
+    }
+    .content {
+      padding: 40px 50px;
+    }
+    h2 {
+      font-size: 18px;
+      color: var(--primary-color);
+      border-left: 4px solid var(--accent-color);
+      padding-left: 12px;
+      margin-top: 44px;
+      margin-bottom: 16px;
+    }
+    h2:first-child { margin-top: 0; }
+    p { font-size: 14px; margin: 0 0 14px; }
+    a { color: var(--primary-color); }
+    a:hover { text-decoration: underline; }
+
+    /* 運営者情報テーブル */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .info-table th, .info-table td {
+      padding: 12px 16px;
+      border: 1px solid #e0e0e0;
+      vertical-align: top;
+    }
+    .info-table th {
+      width: 30%;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .info-table td { background: white; }
+
+    /* Xバッジ */
+    .x-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #000;
+      color: white !important;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      text-decoration: none;
+      margin-top: 4px;
+    }
+    .x-link:hover { background: #333; text-decoration: none; }
+
+    /* サイト概要カード */
+    .about-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .about-card {
+      background: var(--primary-light);
+      border: 1px solid #c8dcea;
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+    .about-card .card-icon {
+      font-size: 20px;
+      color: var(--accent-color);
+      margin-bottom: 8px;
+    }
+    .about-card h3 {
+      font-size: 14px;
+      color: var(--primary-color);
+      margin: 0 0 6px;
+    }
+    .about-card p { font-size: 13px; color: #555; margin: 0; }
+
+    /* お問い合わせ注意書き */
+    .notice-box {
+      background: #fffbea;
+      border: 1px solid #f0d060;
+      border-left: 4px solid var(--accent-color);
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    /* Googleフォーム埋め込み */
+    .form-wrap {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .form-wrap iframe {
+      display: block;
+      width: 100%;
+      border: none;
+    }
+
+    footer {
+      background: #f4f7f6;
+      padding: 20px 40px;
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      border-top: 1px solid #e0e0e0;
+    }
+    footer a { color: #666; text-decoration: none; margin: 0 8px; }
+    footer a:hover { color: var(--primary-color); text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .site-header { padding: 14px 16px; }
+      .hero { padding: 30px 20px; }
+      .content { padding: 24px 20px 40px; }
+      footer { padding: 20px 16px; }
+      .info-table th { width: 36%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="site-header">
+      <a href="https://granty.site/"><i class="fa-solid fa-graduation-cap"></i> 公募情報データベース Granty</a>
+      <a href="https://granty.site/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> 一覧に戻る</a>
+    </div>
+
+    <div class="hero">
+      <h1><i class="fa-solid fa-circle-info"></i> 運営者情報・お問い合わせ</h1>
+      <p>Grantyに関するご質問・情報の訂正依頼・削除依頼はこちらからどうぞ。</p>
+    </div>
+
+    <div class="content">
+
+      <!-- 運営者情報 -->
+      <h2><i class="fa-solid fa-user"></i> 運営者情報</h2>
+      <table class="info-table">
+        <tr>
+          <th>サイト名</th>
+          <td>公募情報データベース Granty（グランティ）</td>
+        </tr>
+        <tr>
+          <th>サイトURL</th>
+          <td><a href="https://granty.site/" target="_blank">https://granty.site/</a></td>
+        </tr>
+        <tr>
+          <th>運営者</th>
+          <td>
+            <div>@Grantydb</div>
+            <a href="https://x.com/Grantydb" target="_blank" rel="noopener" class="x-link">
+              <i class="fa-brands fa-x-twitter"></i> X（旧Twitter）でフォロー
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <th>運営開始</th>
+          <td>2026年</td>
+        </tr>
+        <tr>
+          <th>サイトの目的</th>
+          <td>全国の研究助成金・奨学金・顕彰等の公募情報を一元化し、研究者・大学院生・NPO等が必要な資金情報に素早くアクセスできる環境を提供すること。</td>
+        </tr>
+        <tr>
+          <th>情報の更新</th>
+          <td>随時（おおむね週数回以上）</td>
+        </tr>
+      </table>
+
+      <!-- サイト概要 -->
+      <h2><i class="fa-solid fa-database"></i> Grantyについて</h2>
+      <p>Grantyは、研究者・大学院生・URA（リサーチ・アドミニストレーター）・NPO法人の方々が「資金探し」に費やす時間を減らし、研究・活動本来に集中できる環境をつくることを目指して運営しています。</p>
+
+      <div class="about-cards">
+        <div class="about-card">
+          <div class="card-icon"><i class="fa-solid fa-clock"></i></div>
+          <h3>締切3ヶ月以内の公募のみ掲載</h3>
+          <p>過去に終了した公募は自動的に非表示になるため、常に「今応募できる」情報だけが表示されます。</p>
+        </div>
+        <div class="about-card">
+          <div class="card-icon"><i class="fa-solid fa-tags"></i></div>
+          <h3>タグによる分類</h3>
+          <p>研究・奨学・若手・女性など13種類のタグで分類。自分に合った案件をすばやく絞り込めます。</p>
+        </div>
+        <div class="about-card">
+          <div class="card-icon"><i class="fa-solid fa-star"></i></div>
+          <h3>会員登録不要のパーソナライズ</h3>
+          <p>お気に入り登録・閲覧済み管理はブラウザ内に保存されるため、ログイン不要でご利用いただけます。</p>
+        </div>
+        <div class="about-card">
+          <div class="card-icon"><i class="fa-solid fa-yen-sign"></i></div>
+          <h3>完全無料</h3>
+          <p>Grantyのすべての機能は無料でご利用いただけます。登録・課金は一切不要です。</p>
+        </div>
+      </div>
+
+      <!-- お問い合わせ種別 -->
+      <h2><i class="fa-solid fa-envelope"></i> お問い合わせ</h2>
+      <p>以下のようなお問い合わせをお受けしています。</p>
+      <ul style="font-size:14px; margin-bottom:20px;">
+        <li>掲載情報の誤り・訂正依頼</li>
+        <li>掲載情報の削除依頼</li>
+        <li>新規掲載のご提案・情報提供</li>
+        <li>サイトの不具合・表示崩れのご報告</li>
+        <li>その他Grantyに関するご質問・ご意見</li>
+      </ul>
+
+      <div class="notice-box">
+        <i class="fa-solid fa-circle-info"></i>
+        原則として<strong>3営業日以内</strong>にご返信しますが、お問い合わせの内容によっては返信できかねる場合もございます。あらかじめご了承ください。
+      </div>
+
+      <div class="form-wrap">
+        <iframe
+          src="https://docs.google.com/forms/d/e/1FAIpQLSeimyLhfhuYYOpFVLmoNhTNEMjRw79nR7DtJmvrVaatfXxgrg/viewform?embedded=true"
+          width="100%"
+          height="720"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0">
+          読み込んでいます…
+        </iframe>
+      </div>
+
+    </div><!-- /content -->
+
+    <footer>
+      <p>
+        <a href="https://granty.site/">トップページ</a>
+        <a href="howto.html">活用方法・使い方ガイド</a>
+        <a href="privacy.html">プライバシーポリシー</a>
+      </p>
+      <p>&copy; 2026 Granty</p>
+    </footer>
+
+  </div>
+</body>
+</html>

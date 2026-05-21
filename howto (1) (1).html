@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活用方法・使い方ガイド | 公募情報データベース Granty</title>
+  <meta name="description" content="研究助成金・奨学金データベースGrantyの使い方を詳しく解説。タグ検索・キーワード検索・お気に入り機能・金額フィルターなど、採択率を上げるための効果的な活用方法をご紹介します。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #2c5f88;
+      --primary-light: #eef5f9;
+      --accent-color: #d4a017;
+      --text-color: #333333;
+      --bg-color: #f4f7f6;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: "Noto Sans JP", sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      line-height: 1.8;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    /* ヘッダー */
+    .site-header {
+      background-color: var(--primary-color);
+      padding: 16px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-header a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .site-header a:hover { text-decoration: underline; }
+    .site-header .back-btn {
+      font-size: 13px;
+      background: rgba(255,255,255,0.2);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-weight: 400;
+    }
+    /* ヒーローセクション */
+    .hero {
+      background: linear-gradient(135deg, var(--primary-color) 0%, #1e4a6e 100%);
+      color: white;
+      padding: 50px 40px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 26px;
+      margin: 0 0 12px;
+      line-height: 1.4;
+    }
+    .hero p {
+      font-size: 15px;
+      opacity: 0.88;
+      margin: 0;
+      line-height: 1.7;
+    }
+    /* 目次 */
+    .toc {
+      background: var(--primary-light);
+      border: 1px solid #c8dcea;
+      border-radius: 8px;
+      padding: 20px 28px;
+      margin: 32px 40px;
+    }
+    .toc h2 {
+      font-size: 14px;
+      color: var(--primary-color);
+      margin: 0 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .toc ol {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 14px;
+    }
+    .toc ol li { margin-bottom: 4px; }
+    .toc a { color: var(--primary-color); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    /* 本文 */
+    .content {
+      padding: 0 40px 50px;
+    }
+    h2.section-title {
+      font-size: 20px;
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 8px;
+      margin-top: 50px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h3.subsection {
+      font-size: 16px;
+      color: var(--primary-color);
+      border-left: 4px solid var(--accent-color);
+      padding-left: 12px;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+    p { font-size: 14px; margin: 0 0 14px; }
+    ul, ol { font-size: 14px; padding-left: 22px; margin: 0 0 16px; }
+    ul li, ol li { margin-bottom: 7px; }
+    a { color: var(--primary-color); }
+    a:hover { text-decoration: underline; }
+    /* ステップカード */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .step-card {
+      background: var(--primary-light);
+      border: 1px solid #c8dcea;
+      border-radius: 8px;
+      padding: 18px 20px;
+    }
+    .step-card .step-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-color);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .step-card h4 {
+      font-size: 15px;
+      color: var(--primary-color);
+      margin: 0 0 8px;
+    }
+    .step-card p { font-size: 13px; margin: 0; color: #555; }
+    /* タグ一覧 */
+    .tag-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .tag-item {
+      background: white;
+      border: 1px solid #c8dcea;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+    .tag-item .tag-name {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      border-radius: 4px;
+      padding: 1px 8px;
+      font-weight: 700;
+      margin-right: 6px;
+      font-size: 12px;
+    }
+    /* 機能紹介カード */
+    .feature-card {
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .feature-card .feature-icon {
+      font-size: 24px;
+      color: var(--accent-color);
+      min-width: 32px;
+      text-align: center;
+      margin-top: 2px;
+    }
+    .feature-card h4 {
+      font-size: 15px;
+      color: var(--primary-color);
+      margin: 0 0 6px;
+    }
+    .feature-card p { font-size: 13px; margin: 0; color: #555; }
+    /* Tips */
+    .tip-box {
+      background: #fffbea;
+      border: 1px solid #f0d060;
+      border-left: 4px solid var(--accent-color);
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .tip-box strong { color: var(--accent-color); }
+    /* 注意書き */
+    .notice-box {
+      background: #fff5f5;
+      border: 1px solid #f5c0c0;
+      border-left: 4px solid #e06060;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    /* CTAボタン */
+    .cta-wrap {
+      text-align: center;
+      margin: 40px 0 20px;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: var(--primary-color);
+      color: white;
+      text-decoration: none;
+      padding: 14px 36px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(44,95,136,0.25);
+      transition: background 0.2s;
+    }
+    .cta-btn:hover { background: #1e4a6e; color: white; text-decoration: none; }
+    /* フッター */
+    footer {
+      background: #f4f7f6;
+      padding: 20px 40px;
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      border-top: 1px solid #e0e0e0;
+    }
+    footer a { color: #666; text-decoration: none; margin: 0 8px; }
+    footer a:hover { color: var(--primary-color); text-decoration: underline; }
+    @media (max-width: 640px) {
+      .site-header { padding: 14px 16px; }
+      .hero { padding: 36px 20px; }
+      .hero h1 { font-size: 20px; }
+      .toc { margin: 20px 16px; }
+      .content { padding: 0 16px 40px; }
+      footer { padding: 20px 16px; }
+      .feature-card { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="site-header">
+      <a href="https://granty.site/"><i class="fa-solid fa-graduation-cap"></i> 公募情報データベース Granty</a>
+      <a href="https://granty.site/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> 一覧に戻る</a>
+    </div>
+
+    <div class="hero">
+      <h1><i class="fa-solid fa-book-open"></i> Granty 活用方法・使い方ガイド</h1>
+      <p>研究助成金・奨学金・顕彰情報を効率よく探すための<br>検索機能・パーソナライズ機能をわかりやすく解説します。</p>
+    </div>
+
+    <div class="toc">
+      <h2><i class="fa-solid fa-list"></i> 目次</h2>
+      <ol>
+        <li><a href="#about">Grantyとは</a></li>
+        <li><a href="#basic">基本的な使い方 3ステップ</a></li>
+        <li><a href="#tags">タグの種類と意味</a></li>
+        <li><a href="#filter">フィルター・検索機能の詳細</a></li>
+        <li><a href="#personal">パーソナライズ機能（お気に入り・閲覧済み）</a></li>
+        <li><a href="#amount">金額フィルターの使い方</a></li>
+        <li><a href="#tips">検索のコツ・裏ワザ</a></li>
+        <li><a href="#notice">ご利用にあたっての注意事項</a></li>
+      </ol>
+    </div>
+
+    <div class="content">
+
+      <!-- 1. Grantyとは -->
+      <h2 class="section-title" id="about"><i class="fa-solid fa-graduation-cap"></i> Grantyとは</h2>
+      <p>
+        <strong>公募情報データベース Granty（グランティ）</strong>は、研究者・大学院生・URA・NPO法人などを対象に、現在受付中の研究助成金・奨学金・顕彰・学術交流支援などの公募情報を一元化した無料のデータベースです。
+      </p>
+      <p>
+        日本国内では毎年数百件以上の助成金公募が行われていますが、その情報は各財団のウェブサイトに散在しており、締切を見逃してしまうケースが後を絶ちません。Grantyはそうした「情報収集の手間」を省き、研究者が本来の研究活動に集中できる環境を支援することを目的としています。
+      </p>
+      <ul>
+        <li>締切が近いものを優先表示（〆切日の昇順で自動ソート）</li>
+        <li>概ね3ヶ月以内に締め切りを迎える公募のみを掲載</li>
+        <li>タグ・キーワード・金額など多彩な絞り込み機能</li>
+        <li>ブラウザに記録するお気に入り・閲覧済み管理機能</li>
+      </ul>
+
+      <!-- 2. 基本的な使い方 -->
+      <h2 class="section-title" id="basic"><i class="fa-solid fa-shoe-prints"></i> 基本的な使い方 3ステップ</h2>
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-num">STEP 1</div>
+          <h4>タグでざっくり絞る</h4>
+          <p>表のタグをクリックするか、ヘッダーの「タグ」フィルターから分野を選択します。まず大まかな範囲に絞るのが効率的です。</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">STEP 2</div>
+          <h4>キーワードや金額で深掘り</h4>
+          <p>上部の検索バーにキーワードを入力するか、金額スライダーで予算感に合う案件を絞り込みます。</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">STEP 3</div>
+          <h4>★でお気に入り登録</h4>
+          <p>気になった案件は★ボタンでお気に入り登録。後でまとめて確認できます。リンクをクリックすると自動で閲覧済みになります。</p>
+        </div>
+      </div>
+
+      <!-- 3. タグの種類 -->
+      <h2 class="section-title" id="tags"><i class="fa-solid fa-tags"></i> タグの種類と意味</h2>
+      <p>各公募情報には、内容を分類する2文字のタグが付与されています。1件の公募に複数のタグが付く場合もあります。タグをクリックすると、そのタグに絞り込んで表示できます。</p>
+      <div class="tag-grid">
+        <div class="tag-item"><span class="tag-name">研究</span>研究助成など</div>
+        <div class="tag-item"><span class="tag-name">事業</span>国・自治体の事業</div>
+        <div class="tag-item"><span class="tag-name">連携</span>オープンイノベーション</div>
+        <div class="tag-item"><span class="tag-name">顕彰</span>賞・表彰</div>
+        <div class="tag-item"><span class="tag-name">交流</span>学会・招へい支援</div>
+        <div class="tag-item"><span class="tag-name">刊行</span>刊行助成・懸賞論文</div>
+        <div class="tag-item"><span class="tag-name">創業</span>スタートアップ支援</div>
+        <div class="tag-item"><span class="tag-name">人材</span>教育・人材育成</div>
+        <div class="tag-item"><span class="tag-name">奨学</span>奨学金</div>
+        <div class="tag-item"><span class="tag-name">支援</span>活動支援</div>
+        <div class="tag-item"><span class="tag-name">若手</span>若手研究者限定</div>
+        <div class="tag-item"><span class="tag-name">地域</span>地域限定</div>
+        <div class="tag-item"><span class="tag-name">女性</span>女性限定</div>
+      </div>
+      <div class="tip-box">
+        <strong>💡 活用ヒント：</strong>「若手」「女性」などの属性タグと「研究」「奨学」などの種別タグを組み合わせて使うと、自分に合った案件をより効率的に見つけられます。タグフィルターでは複数選択も可能です。
+      </div>
+
+      <!-- 4. フィルター・検索機能 -->
+      <h2 class="section-title" id="filter"><i class="fa-solid fa-filter"></i> フィルター・検索機能の詳細</h2>
+
+      <h3 class="subsection">全体キーワード検索</h3>
+      <p>画面上部の検索バーは、すべての列を対象にキーワードを横断検索します。スペース区切りで複数キーワードを入力するとAND検索になります。</p>
+      <div class="tip-box">
+        <strong>例：</strong>「博士 留学」と入力すると、博士かつ留学に関係する案件のみが絞り込まれます。
+      </div>
+
+      <h3 class="subsection">列ごとの検索窓</h3>
+      <p>テーブルのヘッダー直下にある入力欄で、列ごとに個別に絞り込めます。機関名等・助成金名等・〆切の列で特に便利です。300ミリ秒のデバウンス処理が入っているため、入力が止まった瞬間に自動で絞り込みが実行されます。</p>
+
+      <h3 class="subsection">タグフィルター（チェックボックス式）</h3>
+      <p>「タグ」列のヘッダー検索エリアにあるボタンをクリックすると、タグのチェックボックス一覧がドロップダウン表示されます。複数のタグを選択すると「いずれかのタグを持つ案件」（OR検索）が表示されます。</p>
+
+      <h3 class="subsection">更新日フィルター</h3>
+      <p>「更新日」列のフィルターでは、情報が更新された時期で絞り込みができます。「1日前」「一週間前」など、新着情報だけを確認したいときに便利です。</p>
+
+      <h3 class="subsection">絞込クリアボタン</h3>
+      <p>検索バーの右に表示される「絞込クリア」ボタンを押すと、すべてのフィルター・検索条件を一括でリセットできます。</p>
+
+      <!-- 5. パーソナライズ機能 -->
+      <h2 class="section-title" id="personal"><i class="fa-solid fa-star"></i> パーソナライズ機能</h2>
+      <p>Grantyでは、会員登録なしでブラウザ内にデータを保存するパーソナライズ機能を提供しています。データはサーバーには送信されず、ご利用のブラウザにのみ保存されます。</p>
+
+      <div class="feature-card">
+        <div class="feature-icon">★</div>
+        <div>
+          <h4>お気に入り機能</h4>
+          <p>各行の★ボタンをクリックすると、その公募をお気に入り登録できます。★が金色になり、ページを再読み込みしても状態が保持されます。ヘッダーの☆トグルボタンをクリックすると、お気に入り登録済みの案件のみを表示できます。また上部の「★ お気に入りのみ」ボタンからも同様の操作が可能です。</p>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">✓</div>
+        <div>
+          <h4>閲覧済み管理機能</h4>
+          <p>助成金名のリンクをクリックして公式サイトを確認すると、自動的に「閲覧済み」としてマークされ、行がグレーアウトします。✓ボタンを直接クリックして手動で切り替えることもできます。ヘッダーの✓トグルボタンをオンにすると、未閲覧の案件のみを表示できます。</p>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 効率的な使い方：</strong>まずタグ・キーワードで絞り込み → 気になる案件を★登録 → 公式サイトを確認したら自動で✓がつく → 次回は「未閲覧のみ」表示で新しい案件を効率的にチェック、という流れがおすすめです。
+      </div>
+
+      <div class="notice-box">
+        <strong>⚠️ ご注意：</strong>お気に入り・閲覧済みのデータはブラウザのローカルストレージに保存されます。別のブラウザや端末には引き継がれません。また、ブラウザのデータを削除するとリセットされます。締切を過ぎた公募は自動的にお気に入りからも削除されます。
+      </div>
+
+      <!-- 6. 金額フィルター -->
+      <h2 class="section-title" id="amount"><i class="fa-solid fa-yen-sign"></i> 金額フィルターの使い方</h2>
+      <p>「金額」列のヘッダーにあるレンジスライダーで、助成金額の範囲を指定して絞り込めます。</p>
+      <ul>
+        <li>スライダーは<strong>100万円単位</strong>で設定できます</li>
+        <li>右端まで動かすと「上限なし」として扱われます</li>
+        <li>「金額不明を含む」チェックボックスをオフにすると、金額が記載されている案件のみ表示されます</li>
+        <li>金額は「上限金額」を基準に表示されます（例：～100万、50～200万）</li>
+        <li>1億円以上の場合は億単位で表示されます（例：～1億、1.5億）</li>
+      </ul>
+      <div class="tip-box">
+        <strong>💡 活用ヒント：</strong>スモールスタートで研究費を確保したい場合は上限を低めに設定、大型プロジェクト向けを探したい場合は下限を高めに設定すると効率的です。
+      </div>
+
+      <!-- 7. 検索のコツ -->
+      <h2 class="section-title" id="tips"><i class="fa-solid fa-lightbulb"></i> 検索のコツ・裏ワザ</h2>
+
+      <h3 class="subsection">言葉の「ゆらぎ」を意識する</h3>
+      <p>助成財団によって、同じ目的でも使われる言葉が異なります。見つからない場合は類義語でも検索してみてください。</p>
+      <ul>
+        <li><strong>留学</strong>を探す場合 → 「派遣」「渡航」「海外」「国際」なども試す</li>
+        <li><strong>女性研究者</strong>を探す場合 → 「ダイバーシティ」「女子」「リケジョ」なども試す</li>
+        <li><strong>旅費</strong>を探す場合 → 「交通費」「参加費」「遠征」なども試す</li>
+        <li><strong>共同研究</strong>を探す場合 → 「連携」「マッチング」「オープンイノベーション」なども試す</li>
+      </ul>
+
+      <h3 class="subsection">更新日フィルターで新着をチェック</h3>
+      <p>「更新日」フィルターで「1日前」「2日前」などを選択すると、最近追加・更新された案件だけを確認できます。週に数回チェックする習慣をつけると、締切直前に慌てることが減ります。</p>
+
+      <h3 class="subsection">複数条件を組み合わせる</h3>
+      <p>Grantyの各フィルターは独立して動作するため、複数の条件を同時に使えます。例えば「タグ：若手」＋「金額：～100万」＋「未閲覧のみ」を同時に設定することで、若手向けの小規模助成のうちまだ確認していないものだけを表示できます。</p>
+
+      <h3 class="subsection">お気に入りで比較検討する</h3>
+      <p>気になる案件はまず★登録しておき、「お気に入りのみ表示」にして一覧で比較検討するのがおすすめです。締切の近い順に並んでいるので、優先順位も判断しやすくなります。</p>
+
+      <!-- 8. 注意事項 -->
+      <h2 class="section-title" id="notice"><i class="fa-solid fa-circle-exclamation"></i> ご利用にあたっての注意事項</h2>
+      <div class="notice-box">
+        <p style="margin:0">当サイトの公募情報は、管理人が各財団・機関のウェブサイトを参照して収集・整理したものです。情報の正確性・完全性・最新性については可能な限り確認していますが、誤情報が含まれる可能性や、情報が更新されている場合があります。</p>
+      </div>
+      <p>応募をご検討の際は、必ず表内のリンクから<strong>各助成財団・機関の公式ウェブサイト</strong>にアクセスし、最新の募集要項・応募資格・提出書類等をご確認ください。締切日の変更や応募資格の細かな条件は特に注意が必要です。</p>
+      <p>掲載された内容によって生じた損害等について、当サイトは一切の責任を負いかねます。あらかじめご了承ください。</p>
+
+      <div class="cta-wrap">
+        <a href="https://granty.site/" class="cta-btn"><i class="fa-solid fa-magnifying-glass"></i> 助成金を探しに行く</a>
+      </div>
+
+    </div><!-- /content -->
+
+    <footer>
+      <p>
+        <a href="https://granty.site/">トップページ</a>
+        <a href="privacy.html">プライバシーポリシー</a>
+        <a href="about.html">運営者情報・お問い合わせ</a>
+      </p>
+      <p>&copy; 2026 Granty</p>
+    </footer>
+
+  </div>
+</body>
+</html>
