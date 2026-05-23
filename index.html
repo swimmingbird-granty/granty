@@ -173,7 +173,7 @@
         color: rgba(255,255,255,0.7);
     }
 
-    /* 検索クリアボタン（?）*/
+    /* 検索クリアボタン（✕）*/
     table.dataTable thead tr:last-child th .col-search-wrap {
         position: relative;
         display: flex;
@@ -270,7 +270,7 @@
     /* スライダーがアクティブ（絞込中）のときにヘッダーセルをハイライト */
     th.amount-active { background-color: rgba(212,160,23,0.2) !important; }
 
-    /* --- 閲覧済み?ボタン --- */
+    /* --- 閲覧済み✓ボタン --- */
     .viewed-btn {
         background: none;
         border: none;
@@ -313,7 +313,7 @@
     .fav-btn:hover { color: var(--accent-color); transform: scale(1.2); }
     .fav-btn.active { color: var(--accent-color); }
 
-    /* ?列の検索窓行トグルボタン */
+    /* ✓列の検索窓行トグルボタン */
     #viewedFilterToggle {
         background: none;
         border: 1.5px solid rgba(255,255,255,0.4);
@@ -401,7 +401,7 @@
         -webkit-appearance: none;
     }
     .update-filter-btn::after {
-        content: "?";
+        content: "▾";
         position: absolute;
         right: 7px;
         top: 50%;
@@ -782,8 +782,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
 
   <script>
-    const GAS_API_URL = "./data.json";
-    const DISPLAY_COLUMNS = ["★", "?", "機関名等", "助成金名等", "〆切", "金額", "タグ", "更新日"];
+    const DISPLAY_COLUMNS = ["★", "✓", "機関名等", "助成金名等", "〆切", "金額", "タグ", "更新日"];
     const FAV_STORAGE_KEY = "granty_favorites";
     const VIEWED_STORAGE_KEY = "granty_viewed";
 
@@ -849,26 +848,53 @@
           }
       });
 
-      fetch(GAS_API_URL)
+      // tbody.html（静的HTML）を fetch してテーブルに挿入し、
+      // その後 data.json で件数カウント・localStorageクリーンアップを行う
+      fetch('./tbody.html?_=' + Date.now())
+        .then(r => r.text())
+        .then(html => {
+            document.getElementById("tableBody").innerHTML = html;
+            // tbody挿入後にヘッダーを生成してDataTablesを初期化
+            buildTableHeader();
+            // data.jsonで件数カウントとlocalStorageクリーンアップ
+            return fetch('./data.json?_=' + Date.now());
+        })
         .then(r => r.json())
-        .then(data => showTable(data))
+        .then(data => {
+            if (!data || data.length === 0) { $('#status').text('データなし'); return; }
+            var header = data[0];
+            var rows = data.slice(1);
+            var colMap = {};
+            header.forEach((name, index) => { colMap[name] = index; });
+
+            var today = new Date(); today.setHours(0,0,0,0);
+            var validFavIds = [];
+            var validCount = 0;
+            rows.forEach(row => {
+                var deadlineStr = row[colMap["〆切"]];
+                var deadlineObj = new Date(deadlineStr);
+                if (deadlineStr && !isNaN(deadlineObj.getTime()) && deadlineObj < today) return;
+                var favId = (row[colMap["助成金名等"]] || "") + "|" + (row[colMap["機関名等"]] || "");
+                validFavIds.push(favId);
+                validCount++;
+            });
+
+            // 期限切れのお気に入り・閲覧済みを削除
+            var cleanedFavs = getFavs().filter(function(id) { return validFavIds.includes(id); });
+            saveFavs(cleanedFavs);
+            var cleanedViewed = getViewed().filter(function(id) { return validFavIds.includes(id); });
+            localStorage.setItem(VIEWED_STORAGE_KEY, JSON.stringify(cleanedViewed));
+
+            initDataTable(validCount);
+            $('#status').html(`<i class="fa-solid fa-check-circle"></i> 受付中: ${validCount}件`);
+        })
         .catch(e => {
             console.error(e);
             $('#status').html('<b style="color:red;">読込エラー</b>');
         });
     });
 
-    function showTable(data) {
-      if (!data || data.length === 0) { $('#status').text('データなし'); return; }
-      
-      var header = data[0]; 
-      var rows = data.slice(1);
-      var colMap = {};
-      header.forEach((name, index) => { colMap[name] = index; });
-
-      // ============================================================
-      // ヘッダーHTML：列名行 + 検索窓行 の2行構造
-      // ============================================================
+    function buildTableHeader() {
       var hHtml = "";
 
       // --- 1行目：列名 ---
@@ -876,14 +902,13 @@
       DISPLAY_COLUMNS.forEach(colName => {
           var className = "";
           if (colName === "★") className = "col-fav";
-          else if (colName === "?") className = "col-viewed";
+          else if (colName === "✓") className = "col-viewed";
           else if (colName === "機関名等") className = "col-org";
           else if (colName === "助成金名等") className = "col-grant";
           else if (colName === "〆切") className = "col-deadline";
           else if (colName === "金額") className = "col-amount";
           else if (colName === "更新日") className = "col-update";
           else if (colName === "タグ") className = "col-tags";
-          
           hHtml += `<th class="${className}">${colName}</th>`;
       });
       hHtml += "</tr>";
@@ -892,12 +917,11 @@
       hHtml += "<tr>";
       DISPLAY_COLUMNS.forEach(colName => {
           if (colName === "★") {
-              // ★列にはお気に入りのみ表示トグルボタン
               hHtml += `<th><button id="favFilterToggle" class="fav-filter-toggle" title="お気に入りのみ表示">☆</button></th>`;
               return;
           }
-          if (colName === "?") {
-              hHtml += `<th><button id="viewedFilterToggle" class="viewed-filter-toggle" title="未閲覧のみ表示">?</button></th>`;
+          if (colName === "✓") {
+              hHtml += `<th><button id="viewedFilterToggle" class="viewed-filter-toggle" title="未閲覧のみ表示">✓</button></th>`;
               return;
           }
           if (colName === "金額") {
@@ -905,7 +929,7 @@
                   <div class="amount-slider-wrap">
                       <div class="amount-slider-labels">
                           <span id="amountLabelMin">0万円</span>
-                          <span>?</span>
+                          <span>〜</span>
                           <span id="amountLabelMax">上限なし</span>
                       </div>
                       <div id="amountSlider"></div>
@@ -948,119 +972,13 @@
           hHtml += `<th>
               <div class="col-search-wrap">
                   <input type="text" class="col-search" data-col="${colName}" placeholder="${placeholder}" autocomplete="off">
-                  <span class="col-search-clear" title="クリア">?</span>
+                  <span class="col-search-clear" title="クリア">✕</span>
               </div>
           </th>`;
       });
       hHtml += "</tr>";
 
       document.getElementById("tableHeadArea").innerHTML = hHtml;
-
-      var bHtml = "";
-      var validCount = 0;
-      var validFavIds = []; // 期限内のレコードのfavIdを収集
-      var today = new Date(); today.setHours(0,0,0,0);
-
-      rows.forEach(row => {
-          var deadlineStr = row[colMap["〆切"]];
-          var deadlineObj = new Date(deadlineStr);
-          if (deadlineStr && !isNaN(deadlineObj.getTime()) && deadlineObj < today) return;
-
-          // お気に入りのIDとして「助成金名+機関名」を使用
-          var favId = (row[colMap["助成金名等"]] || "") + "|" + (row[colMap["機関名等"]] || "");
-          validFavIds.push(favId);
-          var favActive = isFav(favId) ? "active" : "";
-          var favIcon = isFav(favId) ? "★" : "☆";
-          var viewedActive = isViewed(favId) ? "active" : "";
-          var viewedRowClass = isViewed(favId) ? "viewed-row" : "";
-
-          validCount++;
-          bHtml += `<tr data-fav-id="${encodeURIComponent(favId)}" class="${viewedRowClass}">`;
-          
-          DISPLAY_COLUMNS.forEach(colName => {
-              if (colName === "★") {
-                  bHtml += `<td class="col-fav"><button class="fav-btn ${favActive}" title="お気に入り登録">${favIcon}</button></td>`;
-                  return;
-              }
-              if (colName === "?") {
-                  bHtml += `<td class="col-viewed"><button class="viewed-btn ${viewedActive}" title="閲覧済みにする">${viewedActive ? '?' : '　'}</button></td>`;
-                  return;
-              }
-              var idx = colMap[colName];
-              var val = (row[idx] === undefined || row[idx] === null) ? "" : String(row[idx]);
-              var display = val;
-              var sortAttr = "";
-
-              if (colName === "金額") {
-                  var lowerRaw = parseInt(row[colMap["下限"]], 10);
-                  var upperRaw = parseInt(row[colMap["上限"]], 10);
-                  var hasLower = !isNaN(lowerRaw) && lowerRaw > 0;
-                  var hasUpper = !isNaN(upperRaw) && upperRaw > 0;
-                  var displayAmt, sortAmt;
-                  // 万円単位の数値を億・万で表示する関数
-                  function formatAmt(val) {
-                      if (val >= 10000) {
-                          var oku = val / 10000;
-                          // 割り切れる場合は整数表示、そうでなければ小数1桁
-                          return (oku % 1 === 0 ? oku : oku.toFixed(1)) + '億';
-                      }
-                      return val + '万';
-                  }
-
-                  if (!hasLower && !hasUpper) {
-                      displayAmt = '―';
-                      sortAmt = 0;
-                  } else if (hasLower && hasUpper) {
-                      displayAmt = formatAmt(lowerRaw) + '～' + formatAmt(upperRaw);
-                      sortAmt = upperRaw;
-                  } else if (hasUpper) {
-                      displayAmt = '～' + formatAmt(upperRaw);
-                      sortAmt = upperRaw;
-                  } else {
-                      displayAmt = formatAmt(lowerRaw) + '～';
-                      sortAmt = lowerRaw;
-                  }
-                  // data-lower / data-upper をカスタム属性として持たせてフィルターで使う
-                  bHtml += `<td class="col-amount" data-order="${sortAmt}" data-lower="${hasLower ? lowerRaw : 0}" data-upper="${hasUpper ? upperRaw : 0}">${displayAmt}</td>`;
-                  return;
-              }
-              if (colName === "助成金名等") {
-                  var url = row[colMap["URL"]];
-                  if (url && url.startsWith("http")) {
-                      display = `<a href="${url}" target="_blank" class="grant-link">${val}</a>`;
-                  }
-              }
-              else if (colName === "タグ" && val) {
-                  display = val.split(/,|、/).map(t => `<span class="tag-badge">${t.trim()}</span>`).join(" ");
-              }
-              else if (colName === "〆切") {
-                  if (!isNaN(deadlineObj.getTime())) {
-                      sortAttr = ` data-order="${deadlineObj.getTime()}"`;
-                  } else {
-                      sortAttr = ` data-order="9999999999999"`; 
-                  }
-              }
-              else if (colName === "更新日") {
-                  var updateD = new Date(val);
-                  if (!isNaN(updateD.getTime())) {
-                      sortAttr = ` data-order="${updateD.getTime()}"`;
-                  }
-              }
-
-              bHtml += `<td${sortAttr}>${display}</td>`;
-          });
-          bHtml += "</tr>";
-      });
-      document.getElementById("tableBody").innerHTML = bHtml;
-
-      // 期限切れになったレコードをお気に入り・閲覧済みから削除
-      var cleanedFavs = getFavs().filter(function(id) { return validFavIds.includes(id); });
-      saveFavs(cleanedFavs);
-      var cleanedViewed = getViewed().filter(function(id) { return validFavIds.includes(id); });
-      localStorage.setItem(VIEWED_STORAGE_KEY, JSON.stringify(cleanedViewed));
-      
-      initDataTable(validCount);
-      $('#status').html(`<i class="fa-solid fa-check-circle"></i> 受付中: ${validCount}件`);
     }
 
     function initDataTable(validCount) {
@@ -1080,10 +998,10 @@
             searching: true,
             info: true,
             orderCellsTop: true,
-            order: [[4, "asc"]], // ★?が0,1、機関=2、助成金=3、〆切=4
+            order: [[4, "asc"]], // ★✓が0,1、機関=2、助成金=3、〆切=4
             columnDefs: [
                 { orderable: false, targets: "_all" },
-                { searchable: false, targets: [0, 1, 5] } // ★?金額はグローバル検索対象外
+                { searchable: false, targets: [0, 1, 5] } // ★✓金額はグローバル検索対象外
             ],
             pageLength: 50,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "全件"]],
@@ -1102,7 +1020,7 @@
                     }
                     var $viewedBtn = $(this).find('.viewed-btn');
                     if (isViewed(favId)) {
-                        $viewedBtn.addClass('active').text('?');
+                        $viewedBtn.addClass('active').text('✓');
                         $(this).addClass('viewed-row');
                     } else {
                         $viewedBtn.removeClass('active').text('\u3000');
@@ -1451,7 +1369,7 @@
         });
 
         // ============================================================
-        // ?ボタンのクリックイベント（手動トグル）
+        // ✓ボタンのクリックイベント（手動トグル）
         // ============================================================
         $('#myTable tbody').on('click', '.viewed-btn', function() {
             var $btn = $(this);
@@ -1464,7 +1382,7 @@
                 $row.removeClass('viewed-row');
             } else {
                 addViewed(favId);
-                $btn.addClass('active').text('?');
+                $btn.addClass('active').text('✓');
                 $row.addClass('viewed-row');
             }
         });
@@ -1475,7 +1393,7 @@
             var favId = decodeURIComponent($row.data('fav-id') || '');
             if (!favId) return;
             addViewed(favId);
-            $row.find('.viewed-btn').addClass('active').text('?');
+            $row.find('.viewed-btn').addClass('active').text('✓');
             $row.addClass('viewed-row');
         });
 
@@ -1512,7 +1430,7 @@
             toggleFavOnlyMode();
         });
 
-        // 検索窓行の?トグルボタン（ヘッダー内）
+        // 検索窓行の✓トグルボタン（ヘッダー内）
         $('#myTable thead').on('click', '#viewedFilterToggle', function() {
             var stickyHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--h1-height')) +
                 parseInt(getComputedStyle(document.documentElement).getPropertyValue('--toolbar-height')) +
