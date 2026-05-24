@@ -1,0 +1,43 @@
+name: Build index.html
+
+# table_body.html が更新されたときに自動実行
+on:
+  push:
+    paths:
+      - 'table_body.html'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: index.html を生成
+        run: |
+          # table_body.html の中身を読み込む
+          TABLE_BODY=$(cat table_body.html)
+          
+          # index_template.html の {{TABLE_BODY}} を置き換えて index.html を生成
+          # sedで特殊文字を含む長い文字列を扱うためPythonを使用
+          python3 - <<'PYEOF'
+          with open('index_template.html', 'r', encoding='utf-8') as f:
+              template = f.read()
+          with open('table_body.html', 'r', encoding='utf-8') as f:
+              table_body = f.read()
+          result = template.replace('{{TABLE_BODY}}', table_body)
+          with open('index.html', 'w', encoding='utf-8') as f:
+              f.write(result)
+          print(f"index.html 生成完了（{len(result)}文字）")
+          PYEOF
+
+      - name: index.html をコミット・プッシュ
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --staged --quiet || git commit -m "Build index.html from table_body.html $(date '+%Y-%m-%dT%H:%M:%S')"
+          git push
