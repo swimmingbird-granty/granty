@@ -994,6 +994,7 @@
             order: [[4, "asc"]], // ★✓が0,1、機関=2、助成金=3、〆切=4
             columnDefs: [
                 { orderable: false, targets: "_all" },
+                { orderable: true, targets: [4, 7] }, // 〆切(4)・更新日(7)はソート可
                 { searchable: false, targets: [0, 1, 5] } // ★✓金額はグローバル検索対象外
             ],
             pageLength: 50,
