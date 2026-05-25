@@ -786,6 +786,16 @@
     const FAV_STORAGE_KEY = "granty_favorites";
     const VIEWED_STORAGE_KEY = "granty_viewed";
 
+    // ハッシュ関数（GAS側と共通・favId生成用）
+    function hashId(str) {
+        var hash = 5381;
+        for (var i = 0; i < str.length; i++) {
+            hash = ((hash << 5) + hash) + str.charCodeAt(i);
+            hash = hash & 0x7fffffff;
+        }
+        return hash.toString(36);
+    }
+
     // --- localStorage ヘルパー ---
     function getFavs() {
         try { return JSON.parse(localStorage.getItem(FAV_STORAGE_KEY) || "[]"); }
@@ -867,7 +877,7 @@
                 var deadlineStr = row[colMap["〆切"]];
                 var deadlineObj = new Date(deadlineStr);
                 if (deadlineStr && !isNaN(deadlineObj.getTime()) && deadlineObj < today) return;
-                var favId = (row[colMap["助成金名等"]] || "") + "|" + (row[colMap["機関名等"]] || "");
+                var favId = hashId((row[colMap["助成金名等"]] || "") + "|" + (row[colMap["機関名等"]] || "") + "|" + (row[colMap["URL"]] || "") + "|" + (row[colMap["〆切"]] || ""));
                 validFavIds.push(favId);
                 validCount++;
             });
