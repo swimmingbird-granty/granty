@@ -1003,11 +1003,9 @@
             orderCellsTop: true,
             order: [[4, "asc"]], // ★✓が0,1、機関=2、助成金=3、〆切=4
             columnDefs: [
-                { orderable: false, targets: "_all" },
-                { orderable: true, targets: [4, 7] }, // 〆切(4)・更新日(7)はソート可
-                { type: "num", orderData: [4], targets: 4 }, // 〆切はdata-orderの数値でソート
-                { type: "num", orderData: [7], targets: 7 }, // 更新日はdata-orderの数値でソート
-                { searchable: false, targets: [0, 1, 5] } // ★✓金額はグローバル検索対象外
+                { orderable: true,  type: "num", targets: [4, 7] }, // 〆切・更新日はソート可（先に定義）
+                { orderable: false, targets: "_all" },               // 残りは全部ソート不可
+                { searchable: false, targets: [0, 1, 5] }
             ],
             pageLength: 50,
             lengthMenu: [[50, 100, -1], ["50件", "100件", "全件"]],
