@@ -1009,7 +1009,10 @@
             ],
             pageLength: 50,
             lengthMenu: [[50, 100, -1], ["50件", "100件", "全件"]],
-            language: { url: "https://cdn.datatables.net/plug-ins/2.2.1/i18n/ja.json" },
+            language: {
+                url: "https://cdn.datatables.net/plug-ins/2.2.1/i18n/ja.json",
+                lengthMenu: "_MENU_ 表示"
+            },
             autoWidth: false,
             // ページ切替・再描画のたびに★状態を復元
             drawCallback: function() {
